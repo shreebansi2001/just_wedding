@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../routes/app_routes.dart';
 
 class AuthService extends GetxService {
   final _storage = const FlutterSecureStorage();
@@ -32,5 +33,11 @@ class AuthService extends GetxService {
   Future<void> markOnboardingSeen() async {
     _hasSeenOnboarding.value = true;
     await _storage.write(key: 'has_seen_onboarding', value: 'true');
+  }
+
+  Future<void> logout() async {
+    await clearToken();
+    await _storage.deleteAll();
+    Get.offAllNamed(AppRoutes.signIn);
   }
 }

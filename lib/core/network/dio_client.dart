@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' as getx;
+import '../utils/logger.dart';
 import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
 
@@ -9,7 +10,7 @@ class DioClient {
   DioClient() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.0.47:5102', // Local development URL
+        baseUrl: 'https://hoteltiptopplaza.in/JWPortal', // Production/Staging URL
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {
@@ -20,26 +21,25 @@ class DioClient {
     );
 
     _dio.interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
-
-    _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
+          Logger.info('--> ${options.method} ${options.uri}');
+          if (options.data != null) Logger.info('Data: ${options.data}');
+          
           final authService = getx.Get.find<AuthService>();
           if (authService.isAuthenticated) {
             options.headers['Authorization'] = 'Bearer ${authService.token}';
           }
           return handler.next(options);
         },
+        onResponse: (response, handler) {
+          Logger.success('<-- ${response.statusCode} ${response.requestOptions.uri}');
+          return handler.next(response);
+        },
         onError: (DioException e, handler) {
+          Logger.error('<-- Error ${e.response?.statusCode} ${e.requestOptions.uri}');
+          Logger.error(e.message ?? 'Unknown error');
+          
           final isAuthEndpoint = e.requestOptions.path.contains('/v1/api/auth/');
           
           if (e.response?.statusCode == 401 && !isAuthEndpoint) {

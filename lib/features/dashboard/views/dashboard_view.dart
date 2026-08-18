@@ -12,9 +12,11 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      builder: (context, r) {
-        return CustomScrollView(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: ResponsiveBuilder(
+        builder: (context, r) {
+          return CustomScrollView(
           slivers: [
             _buildAppBar(context),
             SliverPadding(
@@ -34,7 +36,7 @@ class DashboardView extends GetView<DashboardController> {
                           const SizedBox(height: AppDimens.paddingLg),
                           _buildSearchBar(),
                           const SizedBox(height: AppDimens.paddingXl),
-                          _buildCalendarPlaceholder(r),
+                          _buildCalendarWidget(r),
                           const SizedBox(height: AppDimens.paddingXl),
                           _buildUpcomingEventsHeader(),
                           const SizedBox(height: AppDimens.paddingMd),
@@ -50,7 +52,7 @@ class DashboardView extends GetView<DashboardController> {
           ],
         );
       },
-    );
+    ));
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -118,13 +120,13 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildCalendarPlaceholder(ResponsiveInfo r) {
+  Widget _buildCalendarWidget(ResponsiveInfo r) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -132,26 +134,30 @@ class DashboardView extends GetView<DashboardController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'August 2026',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Obx(() {
+                final month = controller.currentMonth.value;
+                final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return Text(
+                  '${monthNames[month.month - 1]} ${month.year}',
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }),
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_left, color: AppColors.primary),
-                    onPressed: () {},
+                    icon: const Icon(Icons.chevron_left, color: AppColors.primary, size: 20),
+                    onPressed: controller.previousMonth,
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                   ),
                   const SizedBox(width: AppDimens.paddingMd),
                   IconButton(
-                    icon: const Icon(Icons.chevron_right, color: AppColors.primary),
-                    onPressed: () {},
+                    icon: const Icon(Icons.chevron_right, color: AppColors.primary, size: 20),
+                    onPressed: controller.nextMonth,
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                   ),
@@ -159,10 +165,10 @@ class DashboardView extends GetView<DashboardController> {
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+            children: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
                 .map((day) => Expanded(
                       child: Text(
                         day,
@@ -176,92 +182,130 @@ class DashboardView extends GetView<DashboardController> {
                     ))
                 .toList(),
           ),
-          const SizedBox(height: AppDimens.paddingMd),
-          _buildCalendarGrid(),
+          const SizedBox(height: AppDimens.paddingSm),
+          Obx(() => _buildCalendarGrid()),
         ],
       ),
     );
   }
 
   Widget _buildCalendarGrid() {
-    final List<List<int>> weeks = [
-      [28, 29, 30, 31, 1, 2, 3],
-      [4, 5, 6, 7, 8, 9, 10],
-      [11, 12, 13, 14, 15, 16, 17],
-      [18, 19, 20, 21, 22, 23, 24],
-    ];
+    final currentMonth = controller.currentMonth.value;
+    final selectedDate = controller.selectedDate.value;
+    final daysInMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
+    final firstDayWeekday = DateTime(currentMonth.year, currentMonth.month, 1).weekday;
+    
+    // Previous month trailing days
+    final daysInPrevMonth = DateTime(currentMonth.year, currentMonth.month, 0).day;
+    
+    List<DateTime> calendarDays = [];
+    
+    // Fill previous month days
+    for (int i = firstDayWeekday - 1; i > 0; i--) {
+      calendarDays.add(DateTime(currentMonth.year, currentMonth.month - 1, daysInPrevMonth - i + 1));
+    }
+    
+    // Fill current month days
+    for (int i = 1; i <= daysInMonth; i++) {
+      calendarDays.add(DateTime(currentMonth.year, currentMonth.month, i));
+    }
+    
+    // Fill next month days
+    int remainingDays = 42 - calendarDays.length; // 6 rows * 7 days
+    for (int i = 1; i <= remainingDays; i++) {
+      calendarDays.add(DateTime(currentMonth.year, currentMonth.month + 1, i));
+    }
 
-    final eventDays = [20, 22, 23];
+    List<Widget> rows = [];
+    for (int i = 0; i < 6; i++) {
+      List<Widget> dayWidgets = [];
+      for (int j = 0; j < 7; j++) {
+        final date = calendarDays[i * 7 + j];
+        final isCurrentMonth = date.month == currentMonth.month;
+        final isSelected = selectedDate != null && 
+                           date.year == selectedDate.year && 
+                           date.month == selectedDate.month && 
+                           date.day == selectedDate.day;
+                           
+        // Check if there's an event on this date (client-side indication)
+        final hasEvent = controller.events.any((e) {
+          try {
+            final eDate = DateTime.parse(e.date);
+            return eDate.year == date.year && eDate.month == date.month && eDate.day == date.day;
+          } catch (_) {
+            return false;
+          }
+        });
 
-    return Column(
-      children: List.generate(weeks.length, (weekIndex) {
-        final week = weeks[weekIndex];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: week.map((day) {
-              final isCurrentMonth = !(weekIndex == 0 && day > 7);
-              final isSelected = day == 18;
-              final hasEvent = eventDays.contains(day);
-
-              return Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '$day',
-                        style: TextStyle(
-                          color: isSelected
-                              ? AppColors.white
-                              : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
-                          fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        ),
+        dayWidgets.add(
+          Expanded(
+            child: GestureDetector(
+              onTap: () => controller.selectDate(date),
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : Colors.transparent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        color: isSelected
+                            ? AppColors.white
+                            : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: hasEvent ? AppColors.primary : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Container(
+                    width: 3,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: hasEvent && !isSelected ? AppColors.primary : Colors.transparent,
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
-      }),
-    );
+      }
+      rows.add(Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: dayWidgets,
+        ),
+      ));
+    }
+
+    return Column(children: rows);
   }
 
   Widget _buildEventsList() {
     if (controller.isLoading.value) {
       return const Padding(
-        padding: EdgeInsets.all(40.0),
+        padding: EdgeInsets.all(20.0),
         child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
       );
     }
 
     if (controller.hasError.value) {
       return Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(20.0),
         child: Center(
           child: Column(
             children: [
-              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
-              const SizedBox(height: 16),
+              const Icon(Icons.error_outline, color: AppColors.error, size: 36),
+              const SizedBox(height: 8),
               Text(controller.errorMessage.value, style: const TextStyle(color: AppColors.error)),
             ],
           ),
@@ -270,12 +314,18 @@ class DashboardView extends GetView<DashboardController> {
     }
 
     if (controller.filteredEvents.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(40.0),
+      return Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Center(
-          child: Text(
-            'No upcoming events found.',
-            style: TextStyle(color: AppColors.textSecondary),
+          child: Column(
+            children: [
+              const Icon(Icons.event_busy, color: AppColors.hint, size: 48),
+              const SizedBox(height: 8),
+              const Text(
+                'No events for this date.',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              ),
+            ],
           ),
         ),
       );
@@ -284,7 +334,7 @@ class DashboardView extends GetView<DashboardController> {
     return Column(
       children: controller.filteredEvents.map((event) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: AppDimens.paddingMd),
+          padding: const EdgeInsets.only(bottom: AppDimens.paddingSm),
           child: _buildEventCard(
             title: event.title,
             date: event.date,
@@ -322,7 +372,7 @@ class DashboardView extends GetView<DashboardController> {
           AppStrings.upcomingEvents,
           style: TextStyle(
             color: AppColors.textPrimary,
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -332,6 +382,7 @@ class DashboardView extends GetView<DashboardController> {
             AppStrings.viewAll,
             style: TextStyle(
               color: AppColors.primary,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -351,17 +402,17 @@ class DashboardView extends GetView<DashboardController> {
     required Color tagTextColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingMd),
+      padding: const EdgeInsets.all(AppDimens.paddingSm),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
         border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(AppDimens.radiusSm),
@@ -372,12 +423,12 @@ class DashboardView extends GetView<DashboardController> {
                 imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.broken_image_outlined, color: AppColors.primary);
+                  return const Icon(Icons.event, color: AppColors.primary, size: 24);
                 },
               ),
             ),
           ),
-          const SizedBox(width: AppDimens.paddingMd),
+          const SizedBox(width: AppDimens.paddingSm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,56 +437,54 @@ class DashboardView extends GetView<DashboardController> {
                   title,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.calendar_today_outlined, size: 10, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text(date, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.access_time_outlined, size: 14, color: AppColors.textSecondary),
+                    Text(date, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.access_time_outlined, size: 10, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text(time, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    Text(time, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.location_on_outlined, size: 10, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         location,
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: tagBgColor,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    tag,
-                    style: TextStyle(
-                      color: tagTextColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                )
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.hint),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: tagBgColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              tag,
+              style: TextStyle(
+                color: tagTextColor,
+                fontSize: 8,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          )
         ],
       ),
     );

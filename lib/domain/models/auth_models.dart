@@ -33,58 +33,58 @@ class OtpVerifyRequest {
 }
 
 class SignupRequest {
-  final String address;
-  final int cityId;
-  final int clientId;
-  final String companyEmail;
-  final String companyName;
-  final String confirmPassword;
-  final String contactNo;
-  final String countryCode;
-  final int countryId;
-  final String email;
   final String firstName;
   final String lastName;
+  final String email;
+  final String contactNo;
+  final String companyName;
+  final String companyEmail;
   final String officeNo;
+  final String address;
   final String password;
-  final int roleId;
+  final String confirmPassword;
+  final int cityId;
   final int stateId;
+  final int countryId;
+  final int clientId;
+  final int roleId;
+  final String countryCode;
 
   SignupRequest({
-    required this.address,
-    required this.cityId,
-    required this.clientId,
-    required this.companyEmail,
-    required this.companyName,
-    required this.confirmPassword,
-    required this.contactNo,
-    required this.countryCode,
-    required this.countryId,
-    required this.email,
     required this.firstName,
     required this.lastName,
+    required this.email,
+    required this.contactNo,
+    required this.companyName,
+    required this.companyEmail,
     required this.officeNo,
+    required this.address,
     required this.password,
-    required this.roleId,
+    required this.confirmPassword,
+    required this.cityId,
     required this.stateId,
+    required this.countryId,
+    required this.clientId,
+    required this.roleId,
+    required this.countryCode,
   });
 
   Map<String, dynamic> toJson() => {
-    'address': address,
-    'cityId': cityId,
-    'clientId': clientId,
-    'companyEmail': companyEmail,
-    'companyName': companyName,
-    'confirmPassword': confirmPassword,
-    'contactNo': contactNo,
-    'countryCode': countryCode,
-    'countryId': countryId,
-    'email': email,
     'firstName': firstName,
     'lastName': lastName,
+    'email': email,
+    'contactNo': contactNo,
+    'companyName': companyName,
+    'companyEmail': companyEmail,
     'officeNo': officeNo,
+    'address': address,
     'password': password,
-    'roleId': roleId,
+    'confirmPassword': confirmPassword,
+    'cityId': cityId,
     'stateId': stateId,
+    'countryId': countryId,
+    'clientId': clientId,
+    'roleId': roleId,
+    'countryCode': countryCode,
   };
 }

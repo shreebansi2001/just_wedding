@@ -5,6 +5,7 @@ import '../../../../../core/constants/app_dimens.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/app_text_field.dart';
+import '../../../../../domain/models/event_dtos.dart';
 import '../../controllers/event_wizard_controller.dart';
 import 'wizard_progress_bar.dart';
 
@@ -36,115 +37,173 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
 
   Widget _buildClientCard(int index) {
     final client = controller.clients[index];
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppDimens.paddingLg),
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section header: "1. Clients Name" + add button
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '${index + 1}. ${AppStrings.clientsName}',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Labels Row
+        Row(
+          children: [
+            Text(
+              '${index + 1}. ${AppStrings.clientsName} *',
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            GestureDetector(
+              onTap: controller.addClient,
+              child: const Text(
+                '+ Add New',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              // Add button (green circle with +)
-              GestureDetector(
-                onTap: controller.addClient,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.add, color: AppColors.white, size: 20),
+            ),
+            const SizedBox(width: AppDimens.paddingMd),
+            const Expanded(
+              child: Text(
+                AppStrings.mobileNumber,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: AppDimens.paddingMd),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppDimens.paddingSm),
 
-          // Name row: prefix dropdown + name field
-          Row(
-            children: [
-              // Prefix dropdown
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingSm,
-                  vertical: AppDimens.paddingXs,
+        // Inputs Row
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Prefix
+            Container(
+              height: 48, // matching typical text field height
+              padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingSm),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: client.prefix,
+                  style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                  items: ['Mr.', 'Mrs.', 'Ms.', 'Dr.']
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                      .toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      client.prefix = val;
+                      controller.clients.refresh();
+                    }
+                  },
                 ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(AppDimens.radiusSm),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: client.prefix,
-                    isDense: true,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                    ),
-                    items: ['Mr.', 'Mrs.', 'Ms.', 'Dr.']
-                        .map((p) => DropdownMenuItem(
-                              value: p,
-                              child: Text(p),
-                            ))
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) {
-                        client.prefix = val;
-                        controller.clients.refresh();
-                      }
+              ),
+            ),
+            const SizedBox(width: AppDimens.paddingMd),
+            // Party Search / Autocomplete
+            Expanded(
+              flex: 2,
+              child: Autocomplete<PartyResponseDto>(
+                optionsBuilder: (TextEditingValue textEditingValue) async {
+                  return await controller.searchParties(textEditingValue.text);
+                },
+                displayStringForOption: (PartyResponseDto option) => option.nameEnglish ?? '',
+                onSelected: (PartyResponseDto selection) {
+                  client.partyId = selection.id;
+                  controller.clients.refresh();
+                },
+                fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                  return AppTextField(
+                    controller: textEditingController,
+                    focusNode: focusNode,
+                    hintText: 'Search full legal name...',
+                    suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    onFieldSubmitted: (String value) {
+                      onFieldSubmitted();
                     },
-                  ),
-                ),
+                  );
+                },
+                optionsViewBuilder: (context, onSelected, options) {
+                  return Align(
+                    alignment: Alignment.topLeft,
+                    child: Material(
+                      elevation: 4.0,
+                      borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                      child: Container(
+                        constraints: const BoxConstraints(maxHeight: 200),
+                        width: MediaQuery.of(context).size.width * 0.4, // Match width approximately
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: options.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final PartyResponseDto option = options.elementAt(index);
+                            return InkWell(
+                              onTap: () {
+                                onSelected(option);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                child: Text(
+                                  option.nameEnglish ?? '',
+                                  style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(width: AppDimens.paddingSm),
-              // Name field
-              Expanded(
-                child: AppTextField(
-                  hintText: AppStrings.fullLegalName,
-                  suffixIcon: const Icon(
-                    Icons.keyboard_arrow_down,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+            ),
+            const SizedBox(width: AppDimens.paddingMd),
+            // Mobile Number
+            Expanded(
+              flex: 1,
+              child: AppTextField(
+                hintText: '',
+                keyboardType: TextInputType.phone,
+                onChanged: (val) {
+                  client.mobile = val;
+                  controller.clients.refresh();
+                },
               ),
-            ],
-          ),
-          const SizedBox(height: AppDimens.paddingMd),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppDimens.paddingLg),
 
-          // Mobile Number
-          _buildLabel(AppStrings.mobileNumber),
-          const SizedBox(height: AppDimens.paddingXs),
-          AppTextField(
-            hintText: client.mobile.isNotEmpty ? client.mobile : '+91 XXXXX XXXXX',
-            keyboardType: TextInputType.phone,
-          ),
-          const SizedBox(height: AppDimens.paddingMd),
-
-          // Address
-          _buildLabel(AppStrings.address),
-          const SizedBox(height: AppDimens.paddingXs),
-          const AppTextField(
-            hintText: AppStrings.addressHint,
-          ),
-        ],
-      ),
+        // Address
+        _buildLabel(AppStrings.address),
+        const SizedBox(height: AppDimens.paddingXs),
+        AppTextField(
+          hintText: '',
+          maxLines: 4,
+          onChanged: (val) {
+            client.address = val;
+            controller.clients.refresh();
+          },
+        ),
+        const SizedBox(height: AppDimens.paddingXxl),
+      ],
     );
   }
 

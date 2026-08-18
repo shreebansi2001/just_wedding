@@ -43,41 +43,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                   validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: AppDimens.paddingMd),
-                _buildLabel(AppStrings.eventType),
-                Obx(() => AppTextField(
-                  hintText: controller.eventTypeController.text.isEmpty ? 'Select Event Type' : controller.eventTypeController.text,
-                  readOnly: true,
-                  suffixIcon: controller.isEventTypesLoading.value 
-                      ? const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-                        )
-                      : const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
-                  onTap: () {
-                    if (controller.eventTypes.isEmpty) return;
-                    Get.bottomSheet(
-                      Container(
-                        color: AppColors.white,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: controller.eventTypes.length,
-                          itemBuilder: (context, index) {
-                            final type = controller.eventTypes[index];
-                            return ListTile(
-                              title: Text(type.nameEnglish ?? ''),
-                              onTap: () {
-                                controller.eventTypeId.value = type.id;
-                                controller.eventTypeController.text = type.nameEnglish ?? '';
-                                Get.back();
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                )),
-                const SizedBox(height: AppDimens.paddingMd),
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -1,13 +1,15 @@
 class EventTypeMasterRequestDto {
   final int id;
   final String? nameEnglish;
+  final String? imgPath;
 
-  EventTypeMasterRequestDto({required this.id, this.nameEnglish});
+  EventTypeMasterRequestDto({required this.id, this.nameEnglish, this.imgPath});
 
   factory EventTypeMasterRequestDto.fromJson(Map<String, dynamic> json) {
     return EventTypeMasterRequestDto(
       id: json['id'] ?? 0,
       nameEnglish: json['nameEnglish'],
+      imgPath: json['imgPath'],
     );
   }
 }
@@ -54,7 +56,7 @@ class EventRequestDto {
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final map = <String, dynamic>{
       if (title != null) 'title': title,
       'projectName': projectName,
       'eventTypeId': eventTypeId,
@@ -64,16 +66,17 @@ class EventRequestDto {
       'eventEndDate': eventEndDate,
       'eventEndTime': eventEndTime,
       'budgetAmount': budgetAmount,
-      'venueId': venueId,
+      if (venueId > 0) 'venueId': venueId,
       if (priority != null) 'priority': priority,
       'eventStatus': eventStatus,
       'remarks': remarks,
-      'id': id,
-      'userId': userId,
-      if (partyId != null) 'partyId': partyId,
+      if (id > 0) 'id': id,
+      if (userId > 0) 'userId': userId,
+      if (partyId != null && partyId! > 0) 'partyId': partyId,
       if (eventOtherInfo != null) 'eventOtherInfo': eventOtherInfo!.toJson(),
       if (eventFunctions != null) 'eventFunctions': eventFunctions!.map((e) => e.toJson()).toList(),
     };
+    return map;
   }
 }
 
@@ -182,5 +185,19 @@ class EventFunctionListRequestDto {
       'eventId': eventId,
       'functions': functions.map((e) => e.toJson()).toList(),
     };
+  }
+}
+
+class PartyResponseDto {
+  final int id;
+  final String? nameEnglish;
+
+  PartyResponseDto({required this.id, this.nameEnglish});
+
+  factory PartyResponseDto.fromJson(Map<String, dynamic> json) {
+    return PartyResponseDto(
+      id: json['id'] ?? 0,
+      nameEnglish: json['nameEnglish'],
+    );
   }
 }

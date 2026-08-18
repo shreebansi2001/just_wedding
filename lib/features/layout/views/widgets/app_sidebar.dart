@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/auth_service.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
@@ -85,7 +86,7 @@ class AppSidebar extends StatelessWidget {
                     AppStrings.logout,
                     Icons.logout,
                     color: AppColors.error,
-                    onTap: () => Get.offAllNamed(AppRoutes.signIn),
+                    onTap: () => Get.find<AuthService>().logout(),
                   ),
                 ],
               ),

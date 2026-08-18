@@ -8,6 +8,8 @@ import '../../domain/repositories/quotation_repository.dart';
 import '../../data/repositories/mock_quotation_repository.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/location_repository_impl.dart';
+import '../../domain/repositories/location_repository.dart';
 
 class InitialBinding extends Bindings {
   @override
@@ -15,6 +17,7 @@ class InitialBinding extends Bindings {
     final dioClient = DioClient();
     Get.put<DioClient>(dioClient, permanent: true);
     Get.put<AuthRepository>(AuthRepositoryImpl(dioClient), permanent: true);
+    Get.put<LocationRepository>(LocationRepositoryImpl(dioClient), permanent: true);
     Get.put<EventRepository>(EventRepositoryImpl(dioClient), permanent: true);
     Get.put<FollowUpRepository>(MockFollowUpRepository(), permanent: true);
     Get.put<QuotationRepository>(MockQuotationRepository(), permanent: true);

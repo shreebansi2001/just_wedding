@@ -17,6 +17,18 @@ class EventModel {
     required this.imageUrl,
   });
 
+  factory EventModel.fromJson(Map<String, dynamic> json) {
+    return EventModel(
+      id: json['id']?.toString() ?? '',
+      title: json['projectName'] ?? 'No Title',
+      date: json['eventStartDate'] ?? '',
+      time: json['eventStartTime'] ?? '',
+      location: json['venueName'] ?? 'No Venue',
+      tag: json['eventTypeName'] ?? 'General',
+      imageUrl: '', // Backend doesn't return this, keep empty
+    );
+  }
+
   EventModel copyWith({
     String? id,
     String? title,

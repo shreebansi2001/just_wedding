@@ -10,9 +10,30 @@ class EventRepositoryImpl implements EventRepository {
   EventRepositoryImpl(this._dioClient);
 
   @override
-  Future<List<EventModel>> getEvents() async {
-    // Left as mock or empty for now as Phase 2 only focuses on Wizard steps
-    return [];
+  Future<List<EventModel>> getEventsFiltered({String? search, String? toDate, int page = 0, int size = 10}) async {
+    final response = await _dioClient.dio.post(
+      ApiEndpoints.eventList, // Assuming this exists or I need to add it
+      data: {
+        "eventStatus": null,
+        "eventTypeId": null,
+        "FormData": null,
+        "page": page,
+        "partyId": null,
+        "priority": null,
+        "search": search ?? "",
+        "size": size,
+        "sortBy": "id",
+        "sortDirection": "DESC",
+        "toDate": toDate,
+        "userId": 13, // hardcoded as seen in payload screenshot for now
+        "venueId": null
+      },
+    );
+    
+    final content = response.data['data']['content'] as List?;
+    if (content == null) return [];
+    
+    return content.map((e) => EventModel.fromJson(e)).toList();
   }
 
   @override
@@ -37,18 +58,18 @@ class EventRepositoryImpl implements EventRepository {
 
   // Phase 2 specific methods
   @override
-  Future<List<EventTypeMasterRequestDto>> getEventTypes() async {
+  Future<List<EventTypeMasterRequestDto>> getEventTypes({String search = "", int size = 100}) async {
     final response = await _dioClient.dio.post(
       ApiEndpoints.eventTypeList,
       data: {
-        "nameEnglish": "",
+        "nameEnglish": search,
         "page": 0,
-        "size": 100, // Fetch up to 100 event types for dropdown
-        "sortBy": "nameEnglish",
-        "sortDirection": "asc"
+        "size": size,
+        "sortBy": "id",
+        "sortDirection": "DESC"
       },
     );
-    final data = response.data['data'] as List?;
+    final data = response.data['data']['content'] as List?;
     if (data == null) return [];
     return data.map((e) => EventTypeMasterRequestDto.fromJson(e)).toList();
   }
@@ -67,18 +88,14 @@ class EventRepositoryImpl implements EventRepository {
     final response = await _dioClient.dio.post(
       ApiEndpoints.venueList,
       data: {
-        "nameEnglish": "",
-        "venueType": "",
-        "cityId": 0,
-        "stateId": 0,
-        "isActive": true,
         "page": 0,
         "size": 100,
-        "sortBy": "nameEnglish",
-        "sortDirection": "asc"
+        "search": "",
+        "sortBy": "id",
+        "sortDirection": "DESC"
       },
     );
-    final data = response.data['data'] as List?;
+    final data = response.data['data']['content'] as List?;
     if (data == null) return [];
     return data.map((e) => VenueResponseDto.fromJson(e)).toList();
   }
@@ -106,5 +123,24 @@ class EventRepositoryImpl implements EventRepository {
       ApiEndpoints.eventFunctionAddUpdateList,
       data: request.toJson(),
     );
+  }
+
+  @override
+  Future<List<PartyResponseDto>> getParties(int categoryTypeId, {String search = ""}) async {
+    final response = await _dioClient.dio.post(
+      ApiEndpoints.partyList,
+      data: {
+        "categoryId": null,
+        "categoryTypeId": categoryTypeId,
+        "nameEnglish": search,
+        "page": 0,
+        "size": 100,
+        "sortBy": "id",
+        "sortDirection": "DESC",
+      },
+    );
+    final data = response.data['data']['content'] as List?;
+    if (data == null) return [];
+    return data.map((e) => PartyResponseDto.fromJson(e)).toList();
   }
 }

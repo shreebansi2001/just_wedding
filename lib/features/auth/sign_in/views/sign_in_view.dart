@@ -48,6 +48,8 @@ class SignInView extends GetView<SignInController> {
                         borderRadius: AppDimens.radiusFull,
                         height: AppDimens.buttonHeightLg,
                       )),
+                      const SizedBox(height: AppDimens.paddingLg),
+                      _buildFooter(),
                       const SizedBox(height: AppDimens.paddingXxl),
                     ],
                   ),
@@ -296,6 +298,37 @@ class SignInView extends GetView<SignInController> {
           ),
           child: const Text(
             AppStrings.forgotPassword,
+            style: TextStyle(
+              color: AppColors.primary,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFooter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          "Don't have an account?",
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+          ),
+        ),
+        TextButton(
+          onPressed: () => Get.toNamed('/register'),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: const Text(
+            'Create Account',
             style: TextStyle(
               color: AppColors.primary,
               fontSize: 14,

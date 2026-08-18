@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants/app_colors.dart';
 import 'app_text_field.dart';
 
@@ -57,6 +58,9 @@ class _AppSearchFieldState extends State<AppSearchField> {
         _onSearchChanged(val);
         setState(() {});
       },
+      inputFormatters: [
+        FilteringTextInputFormatter.deny(RegExp(r'^\s')), // Deny space at start
+      ],
     );
   }
 }

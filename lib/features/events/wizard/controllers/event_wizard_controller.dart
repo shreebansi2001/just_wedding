@@ -38,9 +38,13 @@ class EventWizardController extends GetxController {
 
   // Step 2: Client Details
   final clients = <ClientEntry>[].obs;
+  final parties = <PartyResponseDto>[].obs;
+  final isPartiesLoading = false.obs;
 
   // Step 3: Functions Details
   final functions = <FunctionEntry>[].obs;
+  final venues = <VenueResponseDto>[].obs;
+  final isVenuesLoading = false.obs;
 
   // Step 4: Budget Details (Mocked)
   // TODO: Needs a backend endpoint for category allocations
@@ -58,9 +62,15 @@ class EventWizardController extends GetxController {
     final today = DateFormat('MM/dd/yyyy').format(DateTime.now());
     inquiryDateController.text = today;
 
+    if (Get.arguments != null) {
+      eventNameController.text = Get.arguments['eventName'] ?? '';
+      final evId = Get.arguments['eventTypeId'];
+      if (evId != null) eventTypeId.value = evId;
+      // You can store priority and eventDate if needed for final submission
+    }
+
     clients.addAll([
-      ClientEntry(prefix: 'Mr.', name: '', mobile: '', address: ''), // Groom
-      ClientEntry(prefix: 'Ms.', name: '', mobile: '', address: ''), // Bride
+      ClientEntry(prefix: 'Mr.', partyId: null, mobile: '', address: ''),
     ]);
     
     // Default functions matching the design's hardcoded states
@@ -81,6 +91,24 @@ class EventWizardController extends GetxController {
   }
   
   Future<void> _loadDropdowns() async {
+    _fetchEventTypes();
+    _fetchParties();
+    _fetchVenues();
+  }
+
+  Future<void> _fetchVenues() async {
+    try {
+      isVenuesLoading.value = true;
+      final list = await _eventRepository.getVenues();
+      venues.assignAll(list);
+    } catch (e) {
+      Get.snackbar('Warning', 'Failed to load venues');
+    } finally {
+      isVenuesLoading.value = false;
+    }
+  }
+
+  Future<void> _fetchEventTypes() async {
     try {
       isEventTypesLoading.value = true;
       final types = await _eventRepository.getEventTypes();
@@ -93,6 +121,28 @@ class EventWizardController extends GetxController {
       Get.snackbar('Warning', 'Failed to load event types');
     } finally {
       isEventTypesLoading.value = false;
+    }
+  }
+
+  Future<void> _fetchParties() async {
+    try {
+      isPartiesLoading.value = true;
+      final list = await _eventRepository.getParties(6);
+      parties.assignAll(list);
+    } catch (e) {
+      debugPrint('Failed to load parties: $e');
+    } finally {
+      isPartiesLoading.value = false;
+    }
+  }
+
+  Future<List<PartyResponseDto>> searchParties(String query) async {
+    if (query.isEmpty) return parties;
+    try {
+      return await _eventRepository.getParties(6, search: query);
+    } catch (e) {
+      debugPrint('Failed to search parties: $e');
+      return [];
     }
   }
 
@@ -134,7 +184,7 @@ class EventWizardController extends GetxController {
   }
 
   void addClient() {
-    clients.add(ClientEntry(prefix: 'Mr.', name: '', mobile: '', address: ''));
+    clients.add(ClientEntry(prefix: 'Mr.', partyId: null, mobile: '', address: ''));
   }
 
   void removeClient(int index) {
@@ -220,17 +270,13 @@ class EventWizardController extends GetxController {
       isLoading.value = true;
       if (eventId.value == 0) return false;
       
-      final groom = clients.isNotEmpty ? clients[0] : null;
-      final bride = clients.length > 1 ? clients[1] : null;
+      final mainClient = clients.isNotEmpty ? clients[0] : null;
       
       final otherInfo = EventOtherInfoRequestDto(
-        groomName: groom?.name,
-        groomContactNumber: groom?.mobile,
-        brideName: bride?.name,
-        brideContactNumber: bride?.mobile,
+        groomContactNumber: mainClient?.mobile,
       );
       
-      // Resave the event with Other Info
+      // Resave the event with Other Info and partyId
       final request = EventRequestDto(
         id: eventId.value,
         projectName: eventNameController.text, 
@@ -244,6 +290,7 @@ class EventWizardController extends GetxController {
         venueId: 0, 
         eventStatus: "INQUIRY", 
         remarks: remarksController.text,
+        partyId: mainClient?.partyId,
         eventOtherInfo: otherInfo,
       );
       
@@ -314,13 +361,13 @@ class EventWizardController extends GetxController {
 /// Model for client entries in Step 2
 class ClientEntry {
   String prefix;
-  String name;
+  int? partyId;
   String mobile;
   String address;
 
   ClientEntry({
     required this.prefix,
-    required this.name,
+    this.partyId,
     required this.mobile,
     required this.address,
   });
