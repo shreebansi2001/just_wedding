@@ -82,6 +82,8 @@ class QuotationController extends GetxController {
   final igstPercent = 0.obs;
   final taxType = 'PAN'.obs; // PAN or TDS
 
+  final paymentMode = 'BANK_TRANSFER'.obs;
+
   void toggleEventInfo() => isEventInfoExpanded.value = !isEventInfoExpanded.value;
   void toggleEstimateSummary() => isEstimateSummaryExpanded.value = !isEstimateSummaryExpanded.value;
   void togglePaymentDetails() => isPaymentDetailsExpanded.value = !isPaymentDetailsExpanded.value;
