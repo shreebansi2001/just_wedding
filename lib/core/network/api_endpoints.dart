@@ -12,4 +12,5 @@ class ApiEndpoints {
   static const String venueList = '/v1/api/venue/list';
   static const String functionList = '/v1/api/function/list';
   static const String eventFunctionAddUpdateList = '/v1/api/event/function/add-update-list';
+  static const String eventEstimateAddUpdate = '/v1/api/event-estimate/add-update';
 }

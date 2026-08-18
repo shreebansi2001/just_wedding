@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' as getx;
-import '../services/auth_service.dart';
+
 import '../routes/app_routes.dart';
+import '../services/auth_service.dart';
 
 class DioClient {
   late final Dio _dio;
@@ -9,7 +10,8 @@ class DioClient {
   DioClient() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.0.47:5102', // Local development URL
+        baseUrl: 'https://hoteltiptopplaza.in/JWPortal', // Live URL
+        // baseUrl: 'http://192.168.0.47:5102', // Local development URL
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {
