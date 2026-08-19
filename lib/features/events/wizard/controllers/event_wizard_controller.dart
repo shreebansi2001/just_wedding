@@ -26,6 +26,7 @@ class EventWizardController extends GetxController {
   final statusController = TextEditingController(text: 'INQUIRY'); // Matched to DTO
   final eventTypeController = TextEditingController(); // Added for DTO mapping
   final eventTypeId = 0.obs; // Added for DTO mapping
+  final priority = 'Med'.obs;
 
   final startDateController = TextEditingController();
   final startTimeController = TextEditingController();
@@ -63,10 +64,14 @@ class EventWizardController extends GetxController {
     inquiryDateController.text = today;
 
     if (Get.arguments != null) {
+      eventId.value = Get.arguments['eventId'] ?? 0;
       eventNameController.text = Get.arguments['eventName'] ?? '';
+      
       final evId = Get.arguments['eventTypeId'];
       if (evId != null) eventTypeId.value = evId;
-      // You can store priority and eventDate if needed for final submission
+      
+      startDateController.text = Get.arguments['eventDate'] ?? '';
+      priority.value = Get.arguments['priority'] ?? 'Med';
     }
 
     clients.addAll([
@@ -77,11 +82,13 @@ class EventWizardController extends GetxController {
     functions.addAll([
       FunctionEntry(
         name: 'Wedding', 
+        functionId: 1, // Add mapped ID for API
         icon: Icons.favorite, iconBgColor: AppColors.primaryLight, iconColor: AppColors.primary, borderColor: AppColors.primary,
         date: '06/15/2024', time: '06:00 PM', venue: 'Ahmedabad', subVenue: 'Grand Ballroom', isFilledData: true,
       ),
       FunctionEntry(
         name: 'Pool Party', 
+        functionId: 2, // Add mapped ID for API
         icon: Icons.water_rounded, iconBgColor: Colors.grey.shade200, iconColor: AppColors.textSecondary, borderColor: AppColors.border,
         date: null, time: null, venue: 'Ahmedabad', subVenue: 'Poolside Deck', isFilledData: false,
       ),
@@ -246,6 +253,7 @@ class EventWizardController extends GetxController {
         venueId: 0,
         eventStatus: "INQUIRY",
         remarks: remarksController.text,
+        priority: priority.value,
       );
       
       final response = await _eventRepository.saveEvent(request);
@@ -290,6 +298,7 @@ class EventWizardController extends GetxController {
         venueId: 0, 
         eventStatus: "INQUIRY", 
         remarks: remarksController.text,
+        priority: priority.value,
         partyId: mainClient?.partyId,
         eventOtherInfo: otherInfo,
       );
@@ -312,14 +321,14 @@ class EventWizardController extends GetxController {
       isLoading.value = true;
       if (eventId.value == 0) return false;
       
-      final dtoList = functions.map((f) {
+      final dtoList = functions.where((f) => f.functionId != null && f.venueId != null).map((f) {
         return EventFunctionRequestDto(
-          functionId: 1, // Need UI for this
+          functionId: f.functionId!,
           functionDate: f.date ?? '',
           functionTime: f.time ?? '',
           notesEnglish: '',
           venues: [
-            EventFunctionVenueRequestDto(venueId: 1) // Need UI for this
+            EventFunctionVenueRequestDto(venueId: f.venueId!)
           ]
         );
       }).toList();
@@ -376,6 +385,8 @@ class ClientEntry {
 /// Model for function entries in Step 3
 class FunctionEntry {
   String name;
+  int? functionId;
+  int? venueId;
   IconData icon;
   Color iconBgColor;
   Color iconColor;
@@ -388,6 +399,8 @@ class FunctionEntry {
 
   FunctionEntry({
     required this.name,
+    this.functionId,
+    this.venueId,
     required this.icon,
     required this.iconBgColor,
     required this.iconColor,

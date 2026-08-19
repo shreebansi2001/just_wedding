@@ -52,6 +52,15 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                 venue: function.venue,
                 subVenue: function.subVenue,
                 isFilledData: function.isFilledData,
+                venueId: function.venueId,
+                onVenueSelected: (id) {
+                  final v = controller.venues.firstWhereOrNull((element) => element.id == id);
+                  if (v != null) {
+                    function.venueId = id;
+                    function.venue = v.nameEnglish ?? '';
+                    controller.functions.refresh();
+                  }
+                },
               ),
             );
           }).toList(),
@@ -102,6 +111,8 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
     required String venue,
     required String subVenue,
     required bool isFilledData,
+    int? venueId,
+    ValueChanged<int>? onVenueSelected,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -251,9 +262,19 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                     // Venue
                     _buildIconLabel(Icons.location_on_outlined, AppStrings.venue),
                     const SizedBox(height: 4),
-                    AppTextField(
-                      hintText: venue,
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                    PopupMenuButton<int>(
+                      initialValue: venueId,
+                      onSelected: onVenueSelected,
+                      itemBuilder: (context) => controller.venues.map((v) => 
+                        PopupMenuItem(value: v.id, child: Text(v.nameEnglish ?? ''))
+                      ).toList(),
+                      child: IgnorePointer(
+                        child: AppTextField(
+                          hintText: venue.isEmpty ? 'Select Venue' : venue,
+                          readOnly: true,
+                          suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppDimens.paddingMd),
 

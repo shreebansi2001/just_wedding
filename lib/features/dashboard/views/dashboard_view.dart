@@ -290,9 +290,9 @@ class DashboardView extends GetView<DashboardController> {
                             style: GoogleFonts.publicSans(
                               color: isSelected
                                   ? AppColors.white
-                                  : (isCurrentMonth ? AppColors.textPrimary : AppColors.textSecondary.withValues(alpha: 0.5)),
+                                  : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
                               fontSize: 13,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: isSelected ? FontWeight.w700 : (isCurrentMonth ? FontWeight.w500 : FontWeight.w400),
                             ),
                           ),
                         ),

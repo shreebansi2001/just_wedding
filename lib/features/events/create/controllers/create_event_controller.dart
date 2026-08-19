@@ -17,6 +17,7 @@ class CreateEventController extends GetxController {
   // Data Lists
   final eventTypes = <EventTypeMasterRequestDto>[].obs;
   final isLoadingTypes = true.obs;
+  final isCreating = false.obs;
 
   Timer? _debounce;
 
@@ -68,13 +69,48 @@ class CreateEventController extends GetxController {
     }
   }
 
-  void continueToNextStep() {
-    Get.toNamed(AppRoutes.eventWizard, arguments: {
-      'eventName': eventNameController.text,
-      'eventTypeId': selectedEventTypeId.value,
-      'eventDate': eventDateController.text,
-      'priority': selectedPriority.value,
-    });
+  Future<void> continueToNextStep() async {
+    if (eventNameController.text.isEmpty || selectedEventTypeId.value == null || eventDateController.text.isEmpty) {
+      Get.snackbar('Error', 'Please fill all details');
+      return;
+    }
+
+    try {
+      isCreating.value = true;
+      
+      final request = EventRequestDto(
+        id: 0,
+        projectName: eventNameController.text,
+        eventTypeId: selectedEventTypeId.value!,
+        inquiryDate: "", // Or maybe today's date if needed, we'll let it be empty or default
+        eventStartDate: eventDateController.text,
+        eventStartTime: "",
+        eventEndDate: "",
+        eventEndTime: "",
+        eventStatus: "INQUIRY",
+        priority: selectedPriority.value,
+      );
+
+      final response = await _eventRepository.saveEvent(request);
+      final data = response['data'];
+      if (data != null && data['id'] != null) {
+        final eventId = data['id'] as int;
+        
+        Get.toNamed(AppRoutes.eventWizard, arguments: {
+          'eventId': eventId,
+          'eventName': eventNameController.text,
+          'eventTypeId': selectedEventTypeId.value,
+          'eventDate': eventDateController.text,
+          'priority': selectedPriority.value,
+        });
+      } else {
+        Get.snackbar('Error', 'Failed to retrieve event ID');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to create workspace: $e');
+    } finally {
+      isCreating.value = false;
+    }
   }
 
   @override
