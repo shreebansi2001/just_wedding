@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/routes/app_routes.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/widgets/app_search_field.dart';
 import '../controllers/dashboard_controller.dart';
@@ -433,22 +434,24 @@ class DashboardView extends GetView<DashboardController> {
     required Color tagBgColor,
     required Color tagTextColor,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
+    return GestureDetector(
+      onTap: () => Get.toNamed(AppRoutes.eventExecution),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
           Container(
             width: 70,
             height: 70,
@@ -534,6 +537,7 @@ class DashboardView extends GetView<DashboardController> {
           const Icon(Icons.chevron_right, color: AppColors.hint, size: 20),
         ],
       ),
+    ),
     );
   }
 }

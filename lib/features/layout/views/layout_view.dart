@@ -6,6 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/routes/app_routes.dart';
 import '../controllers/layout_controller.dart';
 import '../../dashboard/views/dashboard_view.dart';
+import '../../events/execution/views/event_execution_view.dart';
 import 'widgets/app_sidebar.dart';
 
 class LayoutView extends GetView<LayoutController> {
@@ -23,8 +24,8 @@ class LayoutView extends GetView<LayoutController> {
             const DashboardView(),
             // Create Event placeholder
             const Center(child: Text(AppStrings.createEventTitle)),
-            // Events List placeholder
-            const Center(child: Text(AppStrings.events)),
+            // Events Execution List
+            const EventExecutionView(),
             // More placeholder
             const Center(child: Text(AppStrings.more)),
           ],
