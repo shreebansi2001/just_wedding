@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 import '../../../core/constants/app_strings.dart';
@@ -20,26 +21,26 @@ class DashboardView extends GetView<DashboardController> {
             SliverPadding(
               padding: EdgeInsets.symmetric(
                 horizontal: r.pick(mobile: AppDimens.paddingMd, tablet: AppDimens.paddingLg, desktop: AppDimens.paddingXl),
-                vertical: AppDimens.paddingLg,
+                vertical: AppDimens.paddingMd,
               ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1200),
+                      constraints: const BoxConstraints(maxWidth: 800),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildHeader(),
-                          const SizedBox(height: AppDimens.paddingLg),
-                          _buildSearchBar(),
-                          const SizedBox(height: AppDimens.paddingXl),
-                          _buildCalendarPlaceholder(r),
-                          const SizedBox(height: AppDimens.paddingXl),
-                          _buildUpcomingEventsHeader(),
                           const SizedBox(height: AppDimens.paddingMd),
+                          _buildSearchBar(),
+                          const SizedBox(height: AppDimens.paddingLg),
+                          _buildCalendarCard(),
+                          const SizedBox(height: AppDimens.paddingLg),
+                          _buildUpcomingEventsHeader(),
+                          const SizedBox(height: AppDimens.paddingSm),
                           Obx(() => _buildEventsList()),
-                          const SizedBox(height: 100), // padding for fab
+                          const SizedBox(height: 80), // padding for fab
                         ],
                       ),
                     ),
@@ -59,28 +60,51 @@ class DashboardView extends GetView<DashboardController> {
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+        icon: const Icon(Icons.menu, color: AppColors.textPrimary, size: 24),
         onPressed: () => Scaffold.of(context).openDrawer(),
       ),
-      title: const Text(
-        'Just Event',
-        style: TextStyle(
+      title: Text(
+        AppStrings.justEvent,
+        style: GoogleFonts.publicSans(
           color: AppColors.primary,
-          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
         ),
       ),
       centerTitle: true,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none, color: AppColors.textPrimary),
-          onPressed: () {},
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_none_rounded, color: AppColors.textPrimary, size: 24),
+              onPressed: () {},
+            ),
+            Positioned(
+              top: 14,
+              right: 14,
+              child: Container(
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
         ),
-        const Padding(
-          padding: EdgeInsets.only(right: AppDimens.paddingMd),
+        Padding(
+          padding: const EdgeInsets.only(right: AppDimens.paddingMd, left: 4),
           child: CircleAvatar(
-            radius: 16,
-            backgroundColor: AppColors.primaryLight,
-            child: Icon(Icons.person, size: 20, color: AppColors.primary),
+            radius: 17,
+            backgroundColor: AppColors.primaryTint,
+            child: ClipOval(
+              child: Container(
+                color: const Color(0xFF1E293B),
+                child: const Icon(Icons.person, size: 22, color: AppColors.white),
+              ),
+            ),
           ),
         ),
       ],
@@ -88,23 +112,24 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppStrings.goodMorningAdmin,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textPrimary,
-            fontSize: 28,
+            fontSize: 22,
             fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: AppDimens.paddingXs),
+        const SizedBox(height: 4),
         Text(
           AppStrings.dashboardSubtitle,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
-            fontSize: 14,
+            fontSize: 13,
           ),
         ),
       ],
@@ -118,48 +143,55 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildCalendarPlaceholder(ResponsiveInfo r) {
+  Widget _buildCalendarCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'August 2026',
-                style: TextStyle(
+                style: GoogleFonts.publicSans(
                   color: AppColors.primary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_left, color: AppColors.primary),
+                    icon: const Icon(Icons.chevron_left, color: AppColors.primary, size: 22),
                     onPressed: () {},
                     constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(4),
                   ),
-                  const SizedBox(width: AppDimens.paddingMd),
+                  const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.chevron_right, color: AppColors.primary),
+                    icon: const Icon(Icons.chevron_right, color: AppColors.primary, size: 22),
                     onPressed: () {},
                     constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(4),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -167,16 +199,16 @@ class DashboardView extends GetView<DashboardController> {
                       child: Text(
                         day,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: GoogleFonts.publicSans(
                           color: AppColors.textSecondary,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ))
                 .toList(),
           ),
-          const SizedBox(height: AppDimens.paddingMd),
+          const SizedBox(height: AppDimens.paddingSm),
           _buildCalendarGrid(),
         ],
       ),
@@ -197,13 +229,13 @@ class DashboardView extends GetView<DashboardController> {
       children: List.generate(weeks.length, (weekIndex) {
         final week = weeks[weekIndex];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: week.map((day) {
               final isCurrentMonth = !(weekIndex == 0 && day > 7);
-              final isSelected = day == 18;
-              final hasEvent = eventDays.contains(day);
+              final isSelected = (day == 18 && isCurrentMonth);
+              final hasEvent = (eventDays.contains(day) && isCurrentMonth);
 
               return Expanded(
                 child: Column(
@@ -218,16 +250,16 @@ class DashboardView extends GetView<DashboardController> {
                       ),
                       child: Text(
                         '$day',
-                        style: TextStyle(
+                        style: GoogleFonts.publicSans(
                           color: isSelected
                               ? AppColors.white
                               : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
-                          fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontSize: 13,
+                          fontWeight: isSelected ? FontWeight.w700 : (isCurrentMonth ? FontWeight.w500 : FontWeight.w400),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Container(
                       width: 4,
                       height: 4,
@@ -243,6 +275,33 @@ class DashboardView extends GetView<DashboardController> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildUpcomingEventsHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          AppStrings.upcomingEvents,
+          style: GoogleFonts.publicSans(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {},
+          child: Text(
+            AppStrings.viewAll,
+            style: GoogleFonts.publicSans(
+              color: AppColors.primary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -284,7 +343,7 @@ class DashboardView extends GetView<DashboardController> {
     return Column(
       children: controller.filteredEvents.map((event) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: AppDimens.paddingMd),
+          padding: const EdgeInsets.only(bottom: AppDimens.paddingSm),
           child: _buildEventCard(
             title: event.title,
             date: event.date,
@@ -301,43 +360,17 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Color _getTagBgColor(String tag) {
-    if (tag.toLowerCase() == 'wedding') return const Color(0xFFF9EAEA);
-    if (tag.toLowerCase() == 'corporate') return const Color(0xFFE5F0FF);
-    if (tag.toLowerCase() == 'birthday') return const Color(0xFFFCEFDC);
+    if (tag.toLowerCase() == 'wedding') return AppColors.tagWeddingBg;
+    if (tag.toLowerCase() == 'corporate') return AppColors.tagCorporateBg;
+    if (tag.toLowerCase() == 'birthday') return AppColors.tagBirthdayBg;
     return AppColors.primaryLight;
   }
 
   Color _getTagTextColor(String tag) {
-    if (tag.toLowerCase() == 'wedding') return AppColors.primary;
-    if (tag.toLowerCase() == 'corporate') return const Color(0xFF3163A4);
-    if (tag.toLowerCase() == 'birthday') return const Color(0xFFB47318);
+    if (tag.toLowerCase() == 'wedding') return AppColors.tagWeddingText;
+    if (tag.toLowerCase() == 'corporate') return AppColors.tagCorporateText;
+    if (tag.toLowerCase() == 'birthday') return AppColors.tagBirthdayText;
     return AppColors.primaryDark;
-  }
-
-  Widget _buildUpcomingEventsHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          AppStrings.upcomingEvents,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        TextButton(
-          onPressed: () {},
-          child: const Text(
-            AppStrings.viewAll,
-            style: TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        )
-      ],
-    );
   }
 
   Widget _buildEventCard({
@@ -351,23 +384,30 @@ class DashboardView extends GetView<DashboardController> {
     required Color tagTextColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingMd),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+              color: AppColors.primaryTint,
+              borderRadius: BorderRadius.circular(12),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+              borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
@@ -377,67 +417,74 @@ class DashboardView extends GetView<DashboardController> {
               ),
             ),
           ),
-          const SizedBox(width: AppDimens.paddingMd),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.publicSans(
                     color: AppColors.textPrimary,
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text(date, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.access_time_outlined, size: 14, color: AppColors.textSecondary),
+                    Text(
+                      date,
+                      style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.access_time_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text(time, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    Text(
+                      time,
+                      style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.location_on_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         location,
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: tagBgColor,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     tag,
-                    style: TextStyle(
+                    style: GoogleFonts.publicSans(
                       color: tagTextColor,
                       fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 )
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.hint),
+          const Icon(Icons.chevron_right, color: AppColors.hint, size: 20),
         ],
       ),
     );
   }
 }
+

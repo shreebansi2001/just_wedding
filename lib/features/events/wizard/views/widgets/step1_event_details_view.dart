@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_dimens.dart';
 import '../../../../../core/constants/app_strings.dart';
@@ -43,41 +44,6 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                   validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: AppDimens.paddingMd),
-                _buildLabel(AppStrings.eventType),
-                Obx(() => AppTextField(
-                  hintText: controller.eventTypeController.text.isEmpty ? 'Select Event Type' : controller.eventTypeController.text,
-                  readOnly: true,
-                  suffixIcon: controller.isEventTypesLoading.value 
-                      ? const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-                        )
-                      : const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
-                  onTap: () {
-                    if (controller.eventTypes.isEmpty) return;
-                    Get.bottomSheet(
-                      Container(
-                        color: AppColors.white,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: controller.eventTypes.length,
-                          itemBuilder: (context, index) {
-                            final type = controller.eventTypes[index];
-                            return ListTile(
-                              title: Text(type.nameEnglish ?? ''),
-                              onTap: () {
-                                controller.eventTypeId.value = type.id;
-                                controller.eventTypeController.text = type.nameEnglish ?? '';
-                                Get.back();
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                )),
-                const SizedBox(height: AppDimens.paddingMd),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -105,7 +71,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                             hintText: AppStrings.statusPlanning,
                             controller: controller.statusController,
                             readOnly: true,
-                            suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                            suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
                           ),
                         ],
                       ),
@@ -135,7 +101,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                           controller: controller.startDateController,
                           readOnly: true,
                           onTap: () => controller.selectDate(context, controller.startDateController),
-                          prefixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
                           validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                         ),
                       ],
@@ -152,7 +118,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                           controller: controller.startTimeController,
                           readOnly: true,
                           onTap: () => controller.selectTime(context, controller.startTimeController),
-                          prefixIcon: const Icon(Icons.access_time, size: 18, color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.access_time, size: 18, color: AppColors.hint),
                           validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                         ),
                       ],
@@ -174,7 +140,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                           controller: controller.endDateController,
                           readOnly: true,
                           onTap: () => controller.selectDate(context, controller.endDateController),
-                          prefixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
                         ),
                       ],
                     ),
@@ -190,7 +156,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                           controller: controller.endTimeController,
                           readOnly: true,
                           onTap: () => controller.selectTime(context, controller.endTimeController),
-                          prefixIcon: const Icon(Icons.access_time, size: 18, color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.access_time, size: 18, color: AppColors.hint),
                         ),
                       ],
                     ),
@@ -211,9 +177,10 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                 hintText: '0.00',
                 controller: controller.estimatedBudgetController,
                 keyboardType: TextInputType.number,
-                prefixIcon: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text('₹', style: TextStyle(fontSize: 16, color: AppColors.textSecondary)),
+                prefixIcon: Container(
+                  width: 32,
+                  alignment: Alignment.center,
+                  child: Text('₹', style: GoogleFonts.publicSans(fontSize: 16, color: AppColors.hint)),
                 ),
               ),
             ],
@@ -229,14 +196,15 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
               AppTextField(
                 hintText: AppStrings.preferredVenueHint,
                 controller: controller.preferredVenueController,
-                prefixIcon: const Icon(Icons.location_on_outlined, size: 18, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.location_on_outlined, size: 18, color: AppColors.hint),
+                suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
               ),
               const SizedBox(height: AppDimens.paddingMd),
               _buildLabel(AppStrings.specialInstructions),
               AppTextField(
                 hintText: AppStrings.specialInstructionsHint,
                 controller: controller.remarksController,
-                maxLines: 4,
+                maxLines: 3,
               ),
             ],
           ),
@@ -249,8 +217,12 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
               child: AppButton(
                 text: AppStrings.cancel,
                 isOutlined: true,
+                hasShadow: false,
+                textColor: AppColors.primary,
+                backgroundColor: AppColors.border,
                 onPressed: controller.cancel,
                 borderRadius: AppDimens.radiusMd,
+                height: 48,
               ),
             ),
             const SizedBox(width: AppDimens.paddingMd),
@@ -260,6 +232,8 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                 text: AppStrings.continueToClient,
                 onPressed: controller.nextStep,
                 borderRadius: AppDimens.radiusMd,
+                height: 48,
+                hasShadow: true,
               ),
             ),
           ],
@@ -271,21 +245,28 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
 
   Widget _buildSectionCard({required String title, required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.primary,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
@@ -300,7 +281,7 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
       padding: const EdgeInsets.only(bottom: AppDimens.paddingXs),
       child: Text(
         text,
-        style: const TextStyle(
+        style: GoogleFonts.publicSans(
           color: AppColors.textPrimary,
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -309,3 +290,4 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
     );
   }
 }
+

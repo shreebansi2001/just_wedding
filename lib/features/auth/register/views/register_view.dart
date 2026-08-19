@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -19,7 +20,7 @@ class RegisterView extends GetView<RegisterController> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary, size: 22),
           onPressed: () => Get.back(),
         ),
       ),
@@ -28,24 +29,25 @@ class RegisterView extends GetView<RegisterController> {
           builder: (context, r) {
             return Center(
               child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingLg),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: r.pick(mobile: 600, tablet: 500)),
+                  constraints: BoxConstraints(maxWidth: r.pick(mobile: 420, tablet: 480)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _buildHeader(),
-                      const SizedBox(height: AppDimens.paddingXxl),
+                      const SizedBox(height: AppDimens.paddingLg),
                       
                       _buildSectionTitle(AppStrings.personalInformation),
-                      const SizedBox(height: AppDimens.paddingMd),
+                      const SizedBox(height: AppDimens.paddingSm),
                       Row(
                         children: [
                           Expanded(
                             child: AppTextField(
                               controller: controller.firstNameController,
                               hintText: AppStrings.firstName,
-                              prefixIcon: const Icon(Icons.person_outline, color: AppColors.hint),
+                              prefixIcon: const Icon(Icons.person_outline, color: AppColors.hint, size: 20),
                             ),
                           ),
                           const SizedBox(width: AppDimens.paddingMd),
@@ -53,7 +55,7 @@ class RegisterView extends GetView<RegisterController> {
                             child: AppTextField(
                               controller: controller.lastNameController,
                               hintText: AppStrings.lastName,
-                              prefixIcon: const Icon(Icons.person_outline, color: AppColors.hint),
+                              prefixIcon: const Icon(Icons.person_outline, color: AppColors.hint, size: 20),
                             ),
                           ),
                         ],
@@ -63,14 +65,14 @@ class RegisterView extends GetView<RegisterController> {
                         controller: controller.emailController,
                         hintText: AppStrings.emailAddress,
                         keyboardType: TextInputType.emailAddress,
-                        prefixIcon: const Icon(Icons.mail_outline, color: AppColors.hint),
+                        prefixIcon: const Icon(Icons.mail_outline, color: AppColors.hint, size: 20),
                       ),
                       const SizedBox(height: AppDimens.paddingMd),
                       Obx(() => AppTextField(
                             controller: controller.contactNoController,
                             hintText: AppStrings.mobileNumber,
                             keyboardType: TextInputType.phone,
-                            prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.hint),
+                            prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.hint, size: 20),
                             obscureText: false,
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -78,46 +80,19 @@ class RegisterView extends GetView<RegisterController> {
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined,
                                 color: AppColors.hint,
+                                size: 20,
                               ),
                               onPressed: controller.toggleMobileVisibility,
                             ),
                           )),
                       
-                      const SizedBox(height: AppDimens.paddingXl),
+                      const SizedBox(height: AppDimens.paddingLg),
                       _buildSectionTitle(AppStrings.companyInformation),
-                      const SizedBox(height: AppDimens.paddingMd),
+                      const SizedBox(height: AppDimens.paddingSm),
                       AppTextField(
                         controller: controller.companyNameController,
                         hintText: AppStrings.companyName,
-                        prefixIcon: const Icon(Icons.business_outlined, color: AppColors.hint),
-                      ),
-                      const SizedBox(height: AppDimens.paddingMd),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              controller: controller.companyEmailController,
-                              hintText: 'Company Email',
-                              keyboardType: TextInputType.emailAddress,
-                              prefixIcon: const Icon(Icons.mail_outline, color: AppColors.hint),
-                            ),
-                          ),
-                          const SizedBox(width: AppDimens.paddingMd),
-                          Expanded(
-                            child: AppTextField(
-                              controller: controller.officeNoController,
-                              hintText: 'Office Number',
-                              keyboardType: TextInputType.phone,
-                              prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.hint),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppDimens.paddingMd),
-                      AppTextField(
-                        controller: controller.addressController,
-                        hintText: 'Company Address',
-                        prefixIcon: const Icon(Icons.location_on_outlined, color: AppColors.hint),
+                        prefixIcon: const Icon(Icons.apartment_outlined, color: AppColors.hint, size: 20),
                       ),
                       const SizedBox(height: AppDimens.paddingMd),
                       Row(
@@ -125,35 +100,36 @@ class RegisterView extends GetView<RegisterController> {
                           Expanded(
                             child: AppTextField(
                               hintText: AppStrings.state,
-                              prefixIcon: const Icon(Icons.map_outlined, color: AppColors.hint),
-                              suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.hint),
+                              prefixIcon: const Icon(Icons.map_outlined, color: AppColors.hint, size: 20),
+                              suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.hint, size: 20),
                             ),
                           ),
                           const SizedBox(width: AppDimens.paddingMd),
                           Expanded(
                             child: AppTextField(
                               hintText: AppStrings.city,
-                              prefixIcon: const Icon(Icons.location_on_outlined, color: AppColors.hint),
-                              suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.hint),
+                              prefixIcon: const Icon(Icons.location_on_outlined, color: AppColors.hint, size: 20),
+                              suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.hint, size: 20),
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: AppDimens.paddingXl),
+                      const SizedBox(height: AppDimens.paddingLg),
                       _buildSectionTitle(AppStrings.security),
-                      const SizedBox(height: AppDimens.paddingMd),
+                      const SizedBox(height: AppDimens.paddingSm),
                       Obx(() => AppTextField(
                             controller: controller.passwordController,
                             hintText: AppStrings.password,
                             obscureText: !controller.isPasswordVisible.value,
-                            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.hint),
+                            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.hint, size: 20),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 controller.isPasswordVisible.value
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined,
                                 color: AppColors.hint,
+                                size: 20,
                               ),
                               onPressed: controller.togglePasswordVisibility,
                             ),
@@ -163,25 +139,27 @@ class RegisterView extends GetView<RegisterController> {
                             controller: controller.confirmPasswordController,
                             hintText: AppStrings.confirmPassword,
                             obscureText: !controller.isConfirmPasswordVisible.value,
-                            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.hint),
+                            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.hint, size: 20),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 controller.isConfirmPasswordVisible.value
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined,
                                 color: AppColors.hint,
+                                size: 20,
                               ),
                               onPressed: controller.toggleConfirmPasswordVisibility,
                             ),
                           )),
 
-                      const SizedBox(height: AppDimens.paddingXxl),
+                      const SizedBox(height: AppDimens.paddingXl),
                       Obx(() => AppButton(
                         text: AppStrings.createAccount,
                         onPressed: controller.register,
                         isLoading: controller.isLoading.value,
-                        borderRadius: AppDimens.radiusFull,
-                        height: AppDimens.buttonHeightLg,
+                        borderRadius: AppDimens.radiusLg,
+                        height: 56,
+                        hasShadow: true,
                       )),
                       const SizedBox(height: AppDimens.paddingLg),
                       _buildFooter(),
@@ -198,24 +176,25 @@ class RegisterView extends GetView<RegisterController> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppStrings.createYourAccount,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textPrimary,
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
+            fontSize: 26,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: AppDimens.paddingSm),
+        const SizedBox(height: 6),
         Text(
           AppStrings.registerSubtitle,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
-            fontSize: 15,
-            height: 1.5,
+            fontSize: 13,
+            height: 1.45,
           ),
         ),
       ],
@@ -225,10 +204,11 @@ class RegisterView extends GetView<RegisterController> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: GoogleFonts.publicSans(
         color: AppColors.primary,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
       ),
     );
   }
@@ -237,26 +217,22 @@ class RegisterView extends GetView<RegisterController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           AppStrings.alreadyHaveAccount,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
-            fontSize: 14,
+            fontSize: 13,
           ),
         ),
-        TextButton(
-          onPressed: controller.signIn,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: const Text(
+        const SizedBox(width: 4),
+        GestureDetector(
+          onTap: controller.signIn,
+          child: Text(
             AppStrings.signIn,
-            style: TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.primary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -264,3 +240,4 @@ class RegisterView extends GetView<RegisterController> {
     );
   }
 }
+

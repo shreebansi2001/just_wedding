@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/app_page_container.dart';
@@ -29,10 +30,10 @@ class CreateRsvpView extends GetView<CreateRsvpController> {
               : AppStrings.createRsvp;
           return Text(
             title,
-            style: const TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.textPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
             ),
           );
         }),
@@ -68,3 +69,4 @@ class CreateRsvpView extends GetView<CreateRsvpController> {
     );
   }
 }
+

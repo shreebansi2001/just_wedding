@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/routes/app_routes.dart';
@@ -29,49 +30,93 @@ class LayoutView extends GetView<LayoutController> {
           ],
         );
       }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed(AppRoutes.createEvent);
-        },
-        backgroundColor: AppColors.primary,
-        elevation: 4,
-        child: const Icon(Icons.add, color: AppColors.white),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.35),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            Get.toNamed(AppRoutes.createEvent);
+          },
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+          shape: const CircleBorder(),
+          child: const Icon(Icons.add, color: AppColors.white, size: 26),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: Obx(() {
-        return BottomNavigationBar(
-          currentIndex: controller.selectedIndex.value,
-          onTap: controller.changeTabIndex,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: AppColors.white,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textSecondary,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: AppStrings.home,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month_outlined),
-              activeIcon: Icon(Icons.calendar_month),
-              label: AppStrings.addEvent,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined),
-              activeIcon: Icon(Icons.shopping_bag),
-              label: AppStrings.events,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz),
-              activeIcon: Icon(Icons.more_horiz),
-              label: AppStrings.more,
-            ),
-          ],
+        return Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: controller.selectedIndex.value,
+            onTap: controller.changeTabIndex,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: AppColors.white,
+            elevation: 0,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: AppColors.textSecondary,
+            selectedLabelStyle: GoogleFonts.publicSans(fontWeight: FontWeight.w700, fontSize: 11),
+            unselectedLabelStyle: GoogleFonts.publicSans(fontWeight: FontWeight.w500, fontSize: 11),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.home_outlined, size: 22),
+                ),
+                activeIcon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.home, size: 22),
+                ),
+                label: AppStrings.home,
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.calendar_today_outlined, size: 20),
+                ),
+                activeIcon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.calendar_today, size: 20),
+                ),
+                label: AppStrings.addEvent,
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.shopping_bag_outlined, size: 20),
+                ),
+                activeIcon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.shopping_bag, size: 20),
+                ),
+                label: AppStrings.events,
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.more_horiz, size: 22),
+                ),
+                activeIcon: Padding(
+                  padding: EdgeInsets.only(bottom: 2),
+                  child: Icon(Icons.more_horiz, size: 22),
+                ),
+                label: AppStrings.more,
+              ),
+            ],
+          ),
         );
       }),
     );
   }
 }
+

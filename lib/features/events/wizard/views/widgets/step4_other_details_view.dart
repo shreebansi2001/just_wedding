@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_dimens.dart';
 import '../../../../../core/constants/app_strings.dart';
@@ -53,10 +54,11 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
     return Obx(() {
       final isGroomBride = controller.selectedOtherTab.value == 0;
       return Container(
-        padding: const EdgeInsets.all(AppDimens.paddingXs),
+        height: 48,
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: const Color(0xFFF3F4F6),
-          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+          color: const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
@@ -65,15 +67,14 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                 onTap: () => controller.setOtherTab(0),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isGroomBride ? AppColors.primary : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                    borderRadius: BorderRadius.circular(8),
                     boxShadow: isGroomBride
                         ? [
                             BoxShadow(
-                              color: AppColors.primary.withAlpha(50),
+                              color: AppColors.primary.withValues(alpha: 0.25),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -82,10 +83,10 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                   ),
                   child: Text(
                     AppStrings.groomBride,
-                    style: TextStyle(
+                    style: GoogleFonts.publicSans(
                       color: isGroomBride ? AppColors.white : AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -96,15 +97,14 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                 onTap: () => controller.setOtherTab(1),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: !isGroomBride ? AppColors.primary : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                    borderRadius: BorderRadius.circular(8),
                     boxShadow: !isGroomBride
                         ? [
                             BoxShadow(
-                              color: AppColors.primary.withAlpha(50),
+                              color: AppColors.primary.withValues(alpha: 0.25),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -113,10 +113,10 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                   ),
                   child: Text(
                     AppStrings.otherReference,
-                    style: TextStyle(
+                    style: GoogleFonts.publicSans(
                       color: !isGroomBride ? AppColors.white : AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -130,11 +130,18 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
 
   Widget _buildPersonInfoCard({required String title}) {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,7 +159,7 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
               const SizedBox(width: AppDimens.paddingSm),
               Text(
                 title,
-                style: const TextStyle(
+                style: GoogleFonts.publicSans(
                   color: AppColors.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -160,7 +167,7 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.name),
           const AppTextField(hintText: AppStrings.enterFullName),
           const SizedBox(height: AppDimens.paddingMd),
@@ -169,24 +176,17 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.contactNumber),
           const AppTextField(
-            hintText: AppStrings.phonePlaceholder,
+            hintText: '+1 (555) 000-0000',
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.instaId),
           AppTextField(
-            hintText: AppStrings.usernamePlaceholder,
+            hintText: 'username',
             prefixIcon: Container(
               alignment: Alignment.center,
               width: 36,
-              child: const Text(
-                '@',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: const Icon(Icons.alternate_email, size: 16, color: AppColors.hint),
             ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
@@ -195,17 +195,17 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
             hintText: 'mm/dd/yyyy',
             suffixIcon: Icon(
               Icons.calendar_today_outlined,
-              size: 20,
-              color: AppColors.textSecondary,
+              size: 18,
+              color: AppColors.hint,
             ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.photographerName),
-          const AppTextField(hintText: AppStrings.photographerPlaceholder),
+          const AppTextField(hintText: 'Name of studio or person'),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.contactNumber),
           const AppTextField(
-            hintText: AppStrings.phonePlaceholder,
+            hintText: '+1 (555) 000-0000',
             keyboardType: TextInputType.phone,
           ),
         ],
@@ -215,30 +215,37 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
 
   Widget _buildOtherReferenceCard() {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             AppStrings.assignedPhotographer,
-            style: TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.textPrimary,
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.photographerName),
-          const AppTextField(hintText: AppStrings.photographerPlaceholder),
+          const AppTextField(hintText: 'Name of studio or person'),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.contactNumber),
           const AppTextField(
-            hintText: AppStrings.phonePlaceholder,
+            hintText: '+1 (555) 000-0000',
             keyboardType: TextInputType.phone,
           ),
         ],
@@ -251,10 +258,10 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
       padding: const EdgeInsets.only(bottom: AppDimens.paddingXs),
       child: Text(
         text,
-        style: const TextStyle(
+        style: GoogleFonts.publicSans(
           color: AppColors.textPrimary,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -268,8 +275,12 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
           child: AppButton(
             text: AppStrings.back,
             isOutlined: true,
+            hasShadow: false,
+            textColor: AppColors.primary,
+            backgroundColor: AppColors.border,
             onPressed: controller.previousStep,
             borderRadius: AppDimens.radiusMd,
+            height: 48,
           ),
         ),
         const SizedBox(width: AppDimens.paddingMd),
@@ -280,9 +291,12 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
             onPressed: controller.completeWizard,
             isLoading: controller.isLoading.value,
             borderRadius: AppDimens.radiusMd,
+            height: 48,
+            hasShadow: true,
           )),
         ),
       ],
     );
   }
 }
+

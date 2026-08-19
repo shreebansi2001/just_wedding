@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -13,7 +14,7 @@ class EventReadyView extends GetView<EventReadyController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: ResponsiveBuilder(
           builder: (context, r) {
@@ -21,78 +22,78 @@ class EventReadyView extends GetView<EventReadyController> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: r.pick(mobile: 600, tablet: 450)),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingLg),
+                  padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingXl),
                   child: Column(
                     children: [
                       const Spacer(flex: 2),
                       _buildIllustration(),
-                      const SizedBox(height: AppDimens.paddingXxl),
-                      const Text(
+                      const SizedBox(height: AppDimens.paddingXl),
+                      Text(
                         AppStrings.yourEventIsReady,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: GoogleFonts.publicSans(
                           color: AppColors.primary,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: AppDimens.paddingLg),
-                      const Text(
-                        AppStrings.sampleEventName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 18,
+                          fontSize: 22,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(height: AppDimens.paddingMd),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.calendar_today_outlined,
-                            size: 16,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            AppStrings.sampleEventDate,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: AppDimens.paddingSm),
+                      Text(
+                        AppStrings.sampleEventName,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.publicSans(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: AppDimens.paddingSm),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
-                            Icons.location_on_outlined,
-                            size: 16,
-                            color: AppColors.primary,
+                            Icons.calendar_today_outlined,
+                            size: 14,
+                            color: AppColors.hint,
                           ),
                           const SizedBox(width: 6),
-                          const Text(
-                            AppStrings.sampleEventLocation,
-                            style: TextStyle(
+                          Text(
+                            AppStrings.sampleEventDate,
+                            style: GoogleFonts.publicSans(
                               color: AppColors.textSecondary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppDimens.paddingXl),
-                      const Text(
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: AppColors.hint,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            AppStrings.sampleEventLocation,
+                            style: GoogleFonts.publicSans(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppDimens.paddingLg),
+                      Text(
                         AppStrings.eventReadySubtitle,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: GoogleFonts.publicSans(
                           color: AppColors.textSecondary,
-                          fontSize: 14,
+                          fontSize: 13,
                           height: 1.5,
                         ),
                       ),
@@ -101,17 +102,21 @@ class EventReadyView extends GetView<EventReadyController> {
                         text: AppStrings.dashboard,
                         onPressed: controller.goToDashboard,
                         borderRadius: AppDimens.radiusMd,
+                        height: 50,
+                        hasShadow: true,
                       ),
                       const SizedBox(height: AppDimens.paddingMd),
                       AppButton(
                         text: AppStrings.goToEvents,
                         isOutlined: true,
-                        backgroundColor: AppColors.primaryLight,
+                        hasShadow: false,
                         textColor: AppColors.primary,
+                        backgroundColor: AppColors.border,
                         onPressed: controller.goToEvents,
                         borderRadius: AppDimens.radiusMd,
+                        height: 50,
                       ),
-                      const SizedBox(height: AppDimens.paddingLg),
+                      const SizedBox(height: AppDimens.paddingXl),
                     ],
                   ),
                 ),
@@ -132,11 +137,11 @@ class EventReadyView extends GetView<EventReadyController> {
         children: [
           // Background circular soft pink glow
           Container(
-            width: 190,
-            height: 190,
+            width: 170,
+            height: 170,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primaryLight.withAlpha(120),
+              color: AppColors.primaryTint,
             ),
           ),
 
@@ -145,15 +150,15 @@ class EventReadyView extends GetView<EventReadyController> {
 
           // Clipboard
           Container(
-            width: 110,
-            height: 140,
+            width: 100,
+            height: 130,
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.primary, width: 3),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.primary, width: 2.5),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withAlpha(20),
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -163,21 +168,21 @@ class EventReadyView extends GetView<EventReadyController> {
               children: [
                 // Clipboard clip top
                 Container(
-                  width: 44,
-                  height: 16,
-                  decoration: BoxDecoration(
+                  width: 38,
+                  height: 14,
+                  decoration: const BoxDecoration(
                     color: AppColors.primary,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(6),
-                      bottomRight: Radius.circular(6),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(5),
+                      bottomRight: Radius.circular(5),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 _buildCheckLine(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 _buildCheckLine(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 _buildCheckLine(),
               ],
             ),
@@ -185,27 +190,27 @@ class EventReadyView extends GetView<EventReadyController> {
 
           // Checkmark floating circle on bottom right of clipboard
           Positioned(
-            right: 38,
-            bottom: 30,
+            right: 48,
+            bottom: 36,
             child: Container(
-              width: 44,
-              height: 44,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.white, width: 3),
+                border: Border.all(color: AppColors.white, width: 2.5),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withAlpha(50),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    color: AppColors.primary.withValues(alpha: 0.4),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: const Icon(
                 Icons.check,
                 color: AppColors.white,
-                size: 24,
+                size: 20,
               ),
             ),
           ),
@@ -216,18 +221,18 @@ class EventReadyView extends GetView<EventReadyController> {
 
   Widget _buildCheckLine() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           const Icon(
             Icons.check,
-            size: 14,
-            color: AppColors.primary,
+            size: 12,
+            color: AppColors.primaryTint,
           ),
           const SizedBox(width: 6),
           Expanded(
             child: Container(
-              height: 6,
+              height: 5,
               decoration: BoxDecoration(
                 color: AppColors.border,
                 borderRadius: BorderRadius.circular(3),
@@ -242,23 +247,23 @@ class EventReadyView extends GetView<EventReadyController> {
   List<Widget> _buildConfetti() {
     return [
       Positioned(
-        top: 25,
-        left: 30,
+        top: 30,
+        left: 35,
         child: Transform.rotate(
           angle: 0.3,
           child: Container(
-            width: 8,
-            height: 8,
+            width: 7,
+            height: 7,
             color: AppColors.primary,
           ),
         ),
       ),
       Positioned(
-        top: 45,
-        left: 15,
+        top: 50,
+        left: 20,
         child: Container(
-          width: 6,
-          height: 6,
+          width: 5,
+          height: 5,
           decoration: const BoxDecoration(
             color: Color(0xFFFBBF24),
             shape: BoxShape.circle,
@@ -266,37 +271,37 @@ class EventReadyView extends GetView<EventReadyController> {
         ),
       ),
       Positioned(
-        bottom: 50,
-        left: 20,
+        bottom: 55,
+        left: 25,
         child: Transform.rotate(
           angle: 0.5,
           child: Container(
-            width: 7,
-            height: 7,
-            color: AppColors.primary.withAlpha(180),
+            width: 6,
+            height: 6,
+            color: AppColors.primary.withValues(alpha: 0.8),
           ),
         ),
       ),
       Positioned(
-        top: 35,
-        right: 30,
+        top: 40,
+        right: 35,
         child: Container(
-          width: 6,
-          height: 6,
+          width: 5,
+          height: 5,
           decoration: const BoxDecoration(
-            color: AppColors.primaryLight,
+            color: AppColors.primaryTint,
             shape: BoxShape.circle,
           ),
         ),
       ),
       Positioned(
-        bottom: 60,
-        right: 20,
+        bottom: 65,
+        right: 25,
         child: Transform.rotate(
           angle: 0.2,
           child: Container(
-            width: 7,
-            height: 7,
+            width: 6,
+            height: 6,
             color: const Color(0xFF34D399),
           ),
         ),
@@ -304,3 +309,4 @@ class EventReadyView extends GetView<EventReadyController> {
     ];
   }
 }
+

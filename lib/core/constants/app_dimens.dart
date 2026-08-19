@@ -9,13 +9,14 @@ class AppDimens {
   static const double paddingXxl = 48.0;
 
   static const double radiusXs = 4.0;
-  static const double radiusSm = 6.0;
-  static const double radiusMd = 8.0;
-  static const double radiusLg = 12.0;
-  static const double radiusXl = 16.0;
-  static const double radiusFull = 100.0;
+  static const double radiusSm = 8.0;
+  static const double radiusMd = 12.0;
+  static const double radiusLg = 16.0;
+  static const double radiusXl = 20.0;
+  static const double radiusFull = 9999.0;
 
-  static const double buttonHeight = 40.0;
-  static const double buttonHeightLg = 44.0;
+  static const double buttonHeight = 48.0;
+  static const double buttonHeightLg = 56.0;
   static const double iconSize = 20.0;
 }
+

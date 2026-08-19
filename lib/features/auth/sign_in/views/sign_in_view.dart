@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -21,34 +22,33 @@ class SignInView extends GetView<SignInController> {
           builder: (context, r) {
             return Center(
               child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingLg),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: r.pick(mobile: 600, tablet: 450)),
+                  constraints: BoxConstraints(maxWidth: r.pick(mobile: 400, tablet: 450)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: r.pick(mobile: AppDimens.paddingMd, tablet: AppDimens.paddingXl)),
+                      const SizedBox(height: AppDimens.paddingMd),
                       _buildLogo(),
                       const SizedBox(height: AppDimens.paddingLg),
-                      const SignInIllustration(),
-                      SizedBox(height: r.pick(mobile: AppDimens.paddingXl, tablet: AppDimens.paddingXxl)),
-                      _buildHeader(),
-                      const SizedBox(height: AppDimens.paddingXl),
-                      _buildForm(),
+                      const Center(child: SignInIllustration()),
                       const SizedBox(height: AppDimens.paddingLg),
+                      _buildHeader(),
+                      const SizedBox(height: AppDimens.paddingLg),
+                      _buildForm(),
+                      const SizedBox(height: AppDimens.paddingMd),
                       _buildActions(),
                       const SizedBox(height: AppDimens.paddingXl),
                       Obx(() => AppButton(
-                        text: controller.loginMethod.value == LoginMethod.otp && controller.isOtpSent.value
-                            ? 'Verify OTP'
-                            : (controller.loginMethod.value == LoginMethod.otp ? 'Request OTP' : AppStrings.signIn),
+                        text: AppStrings.signIn,
                         onPressed: controller.submit,
                         isLoading: controller.isLoading.value,
-                        borderRadius: AppDimens.radiusFull,
-                        height: AppDimens.buttonHeightLg,
+                        borderRadius: AppDimens.radiusLg,
+                        height: 56,
+                        hasShadow: true,
                       )),
-                      const SizedBox(height: AppDimens.paddingXxl),
+                      const SizedBox(height: AppDimens.paddingXl),
                     ],
                   ),
                 ),
@@ -69,35 +69,35 @@ class SignInView extends GetView<SignInController> {
           height: 48,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: AppColors.primaryTint,
             borderRadius: BorderRadius.circular(AppDimens.radiusMd),
           ),
-          child: const Text(
+          child: Text(
             'JE',
-            style: TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.primary,
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
         const SizedBox(width: AppDimens.paddingMd),
-        const Column(
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               AppStrings.justEvent,
-              style: TextStyle(
+              style: GoogleFonts.publicSans(
                 color: AppColors.textPrimary,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
               ),
             ),
             Text(
               AppStrings.enterpriseEdition,
-              style: TextStyle(
+              style: GoogleFonts.publicSans(
                 color: AppColors.textSecondary,
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -108,24 +108,25 @@ class SignInView extends GetView<SignInController> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppStrings.welcomeBack,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textPrimary,
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: AppDimens.paddingSm),
+        const SizedBox(height: 6),
         Text(
           AppStrings.signInSubtitle,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
-            fontSize: 15,
-            height: 1.5,
+            fontSize: 13,
+            height: 1.45,
           ),
         ),
       ],
@@ -135,124 +136,30 @@ class SignInView extends GetView<SignInController> {
   Widget _buildForm() {
     return Column(
       children: [
-        _buildLoginToggle(),
-        const SizedBox(height: AppDimens.paddingXl),
-        Obx(() {
-          if (controller.loginMethod.value == LoginMethod.email) {
-            return Column(
-              children: [
-                AppTextField(
-                  controller: controller.emailController,
-                  hintText: AppStrings.emailAddress,
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(Icons.mail_outline, color: AppColors.hint),
-                ),
-                const SizedBox(height: AppDimens.paddingMd),
-                AppTextField(
-                  controller: controller.passwordController,
-                  hintText: AppStrings.password,
-                  obscureText: !controller.isPasswordVisible.value,
-                  prefixIcon: const Icon(Icons.lock_outline, color: AppColors.hint),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      controller.isPasswordVisible.value
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: AppColors.hint,
-                    ),
-                    onPressed: controller.togglePasswordVisibility,
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return Column(
-              children: [
-                AppTextField(
-                  controller: controller.contactNoController,
-                  hintText: 'Mobile Number',
-                  keyboardType: TextInputType.phone,
-                  prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.hint),
-                  readOnly: controller.isOtpSent.value,
-                ),
-                if (controller.isOtpSent.value) ...[
-                  const SizedBox(height: AppDimens.paddingMd),
-                  AppTextField(
-                    controller: controller.otpController,
-                    hintText: 'Enter OTP',
-                    keyboardType: TextInputType.number,
-                    prefixIcon: const Icon(Icons.pin_outlined, color: AppColors.hint),
-                  ),
-                ],
-              ],
-            );
-          }
-        }),
+        AppTextField(
+          controller: controller.emailController,
+          hintText: AppStrings.emailAddress,
+          keyboardType: TextInputType.emailAddress,
+          prefixIcon: const Icon(Icons.mail_outline, color: AppColors.hint, size: 20),
+        ),
+        const SizedBox(height: AppDimens.paddingMd),
+        Obx(() => AppTextField(
+          controller: controller.passwordController,
+          hintText: AppStrings.password,
+          obscureText: !controller.isPasswordVisible.value,
+          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.hint, size: 20),
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.isPasswordVisible.value
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              color: AppColors.hint,
+              size: 20,
+            ),
+            onPressed: controller.togglePasswordVisibility,
+          ),
+        )),
       ],
-    );
-  }
-
-  Widget _buildLoginToggle() {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.border.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-      ),
-      child: Obx(() => Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => controller.setLoginMethod(LoginMethod.email),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: controller.loginMethod.value == LoginMethod.email 
-                      ? AppColors.white 
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-                  boxShadow: controller.loginMethod.value == LoginMethod.email 
-                      ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
-                      : null,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Email',
-                  style: TextStyle(
-                    fontWeight: controller.loginMethod.value == LoginMethod.email ? FontWeight.bold : FontWeight.w500,
-                    color: controller.loginMethod.value == LoginMethod.email ? AppColors.textPrimary : AppColors.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => controller.setLoginMethod(LoginMethod.otp),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: controller.loginMethod.value == LoginMethod.otp 
-                      ? AppColors.white 
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-                  boxShadow: controller.loginMethod.value == LoginMethod.otp 
-                      ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
-                      : null,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Mobile OTP',
-                  style: TextStyle(
-                    fontWeight: controller.loginMethod.value == LoginMethod.otp ? FontWeight.bold : FontWeight.w500,
-                    color: controller.loginMethod.value == LoginMethod.otp ? AppColors.textPrimary : AppColors.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      )),
     );
   }
 
@@ -261,44 +168,44 @@ class SignInView extends GetView<SignInController> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Obx(() {
-          return Row(
-            children: [
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: Checkbox(
-                  value: controller.rememberMe.value,
-                  onChanged: controller.toggleRememberMe,
-                  activeColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+          return GestureDetector(
+            onTap: () => controller.toggleRememberMe(!controller.rememberMe.value),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: Checkbox(
+                    value: controller.rememberMe.value,
+                    onChanged: controller.toggleRememberMe,
+                    activeColor: AppColors.primary,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    side: const BorderSide(color: AppColors.border, width: 1.5),
                   ),
                 ),
-              ),
-              const SizedBox(width: AppDimens.paddingSm),
-              const Text(
-                AppStrings.rememberMe,
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                const SizedBox(width: 8),
+                Text(
+                  AppStrings.rememberMe,
+                  style: GoogleFonts.publicSans(
+                    color: const Color(0xFF475569),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }),
-        TextButton(
-          onPressed: controller.forgotPassword,
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: const Text(
+        GestureDetector(
+          onTap: controller.forgotPassword,
+          child: Text(
             AppStrings.forgotPassword,
-            style: TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.primary,
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -307,3 +214,4 @@ class SignInView extends GetView<SignInController> {
     );
   }
 }
+

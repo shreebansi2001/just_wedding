@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 import '../../../core/constants/app_strings.dart';
@@ -20,7 +21,7 @@ class OnboardingView extends GetView<OnboardingController> {
           builder: (context, r) {
             return Column(
               children: [
-                _buildTopBar(r),
+                _buildTopBar(),
                 Expanded(
                   child: PageView(
                     controller: controller.pageController,
@@ -56,41 +57,46 @@ class OnboardingView extends GetView<OnboardingController> {
     );
   }
 
-  /// Top bar with back arrow (page 2+) and Skip (pages 0-1)
-  Widget _buildTopBar(ResponsiveInfo r) {
+  /// Top bar with back arrow (page 2) and Skip (pages 0-1)
+  Widget _buildTopBar() {
     return SizedBox(
-      height: 56,
+      height: 48,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingSm),
+        padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingMd),
         child: Obx(() {
           final page = controller.currentPage.value;
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Back arrow on page > 0
-              if (page > 0)
+              // Back arrow on page == 2 (Screen 3 in Figma)
+              if (page == 2)
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                  icon: const Icon(Icons.arrow_back, color: AppColors.textSecondary, size: 22),
                   onPressed: controller.back,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 )
               else
-                const SizedBox(width: 48),
+                const SizedBox(width: 32),
 
               // Skip on pages 0 and 1
               if (page < 2)
-                TextButton(
-                  onPressed: controller.skip,
-                  child: const Text(
-                    AppStrings.skip,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                GestureDetector(
+                  onTap: controller.skip,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Text(
+                      AppStrings.skip,
+                      style: GoogleFonts.publicSans(
+                        color: AppColors.hint,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 )
               else
-                const SizedBox(width: 48),
+                const SizedBox(width: 32),
             ],
           );
         }),
@@ -106,37 +112,43 @@ class OnboardingView extends GetView<OnboardingController> {
     required ResponsiveInfo r,
   }) {
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingLg),
       child: Column(
         children: [
-          SizedBox(height: r.pick(mobile: AppDimens.paddingMd, tablet: AppDimens.paddingXl)),
-          // Illustration area
           illustration,
-          SizedBox(height: r.pick(mobile: AppDimens.paddingXl, tablet: AppDimens.paddingXxl)),
-          // Title
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: r.pick(mobile: 28, tablet: 36),
-              fontWeight: FontWeight.w800,
-              height: 1.25,
+          const SizedBox(height: AppDimens.paddingXl),
+          // Title with exact Figma specs: Public Sans Bold 30px, line-height 37.5px (-0.75 letter spacing)
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.publicSans(
+                color: AppColors.textPrimary,
+                fontSize: r.pick(mobile: 28, tablet: 32),
+                fontWeight: FontWeight.w700,
+                height: 1.25,
+                letterSpacing: -0.75,
+              ),
             ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
-          // Subtitle
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: r.pick(mobile: 15, tablet: 17),
-              height: 1.6,
-              fontWeight: FontWeight.w400,
+          // Subtitle with exact Figma specs: Public Sans Regular 14px, #64748B
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.publicSans(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+                height: 1.5,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-          const SizedBox(height: AppDimens.paddingXl),
+          const SizedBox(height: AppDimens.paddingLg),
         ],
       ),
     );
@@ -147,30 +159,33 @@ class OnboardingView extends GetView<OnboardingController> {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         AppDimens.paddingLg,
-        AppDimens.paddingSm,
+        0,
         AppDimens.paddingLg,
-        r.pick(mobile: AppDimens.paddingXl, tablet: AppDimens.paddingXxl),
+        r.pick(mobile: AppDimens.paddingLg, tablet: AppDimens.paddingXl),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildDotIndicator(),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingXl),
           Obx(() {
             final page = controller.currentPage.value;
-            return AppButton(
-              text: page == 2
-                  ? AppStrings.getStartedArrow
-                  : page == 1
-                      ? AppStrings.next
-                      : AppStrings.getStarted,
-              onPressed: controller.next,
-              borderRadius: AppDimens.radiusFull,
-              height: AppDimens.buttonHeightLg,
-              width: r.pick(mobile: double.infinity, tablet: 400),
-              icon: page == 2
-                  ? const Icon(Icons.arrow_forward, color: AppColors.white, size: 20)
-                  : null,
+            return SizedBox(
+              width: r.pick(mobile: double.infinity, tablet: 340),
+              child: AppButton(
+                text: page == 2
+                    ? 'GET STARTED'
+                    : page == 1
+                        ? 'NEXT'
+                        : 'GET STARTED',
+                onPressed: controller.next,
+                borderRadius: AppDimens.radiusFull,
+                height: 56,
+                hasShadow: true,
+                icon: page == 2
+                    ? const Icon(Icons.arrow_forward, color: AppColors.white, size: 18)
+                    : null,
+              ),
             );
           }),
         ],
@@ -178,7 +193,7 @@ class OnboardingView extends GetView<OnboardingController> {
     );
   }
 
-  /// Three dot indicators: active = elongated pill, inactive = small circle
+  /// Three dot indicators: active = elongated pill, inactive = circle
   Widget _buildDotIndicator() {
     return Obx(() {
       return Row(
@@ -188,9 +203,9 @@ class OnboardingView extends GetView<OnboardingController> {
           return AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            height: 8,
-            width: isActive ? 24 : 8,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            height: 6,
+            width: isActive ? 24 : 6,
             decoration: BoxDecoration(
               color: isActive ? AppColors.primary : AppColors.dotInactive,
               borderRadius: BorderRadius.circular(AppDimens.radiusFull),
@@ -201,3 +216,4 @@ class OnboardingView extends GetView<OnboardingController> {
     });
   }
 }
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_dimens.dart';
 import '../../../../../core/constants/app_strings.dart';
@@ -38,65 +39,53 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
     final client = controller.clients[index];
     return Container(
       margin: const EdgeInsets.only(bottom: AppDimens.paddingLg),
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section header: "1. Clients Name" + add button
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '${index + 1}. ${AppStrings.clientsName}',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              // Add button (green circle with +)
-              GestureDetector(
-                onTap: controller.addClient,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.add, color: AppColors.white, size: 20),
-                ),
-              ),
-            ],
+          // Section header: "Clients Name"
+          Text(
+            AppStrings.clientsName,
+            style: GoogleFonts.publicSans(
+              color: AppColors.primary,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
 
-          // Name row: prefix dropdown + name field
+          // Name row: prefix dropdown + name field + square plus button
           Row(
             children: [
               // Prefix dropdown
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingSm,
-                  vertical: AppDimens.paddingXs,
-                ),
+                height: 52,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                  border: Border.all(color: AppColors.border, width: 1),
+                  borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+                  color: AppColors.white,
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: client.prefix,
-                    isDense: true,
-                    style: const TextStyle(
+                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint, size: 18),
+                    style: GoogleFonts.publicSans(
                       color: AppColors.textPrimary,
-                      fontSize: 14,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
                     ),
                     items: ['Mr.', 'Mrs.', 'Ms.', 'Dr.']
                         .map((p) => DropdownMenuItem(
@@ -113,15 +102,37 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
                   ),
                 ),
               ),
-              const SizedBox(width: AppDimens.paddingSm),
+              const SizedBox(width: 8),
               // Name field
               Expanded(
                 child: AppTextField(
                   hintText: AppStrings.fullLegalName,
                   suffixIcon: const Icon(
                     Icons.keyboard_arrow_down,
-                    color: AppColors.textSecondary,
+                    color: AppColors.hint,
+                    size: 20,
                   ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Square plus button
+              GestureDetector(
+                onTap: controller.addClient,
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.add, color: AppColors.white, size: 22),
                 ),
               ),
             ],
@@ -132,7 +143,7 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
           _buildLabel(AppStrings.mobileNumber),
           const SizedBox(height: AppDimens.paddingXs),
           AppTextField(
-            hintText: client.mobile.isNotEmpty ? client.mobile : '+91 XXXXX XXXXX',
+            hintText: client.mobile.isNotEmpty ? client.mobile : '+91 89624 39648',
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: AppDimens.paddingMd),
@@ -142,6 +153,7 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
           const SizedBox(height: AppDimens.paddingXs),
           const AppTextField(
             hintText: AppStrings.addressHint,
+            maxLines: 3,
           ),
         ],
       ),
@@ -149,12 +161,15 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
   }
 
   Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        color: AppColors.textPrimary,
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimens.paddingXs),
+      child: Text(
+        text,
+        style: GoogleFonts.publicSans(
+          color: AppColors.textPrimary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -167,8 +182,12 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
           child: AppButton(
             text: AppStrings.cancel,
             isOutlined: true,
+            hasShadow: false,
+            textColor: AppColors.primary,
+            backgroundColor: AppColors.border,
             onPressed: controller.cancel,
             borderRadius: AppDimens.radiusMd,
+            height: 48,
           ),
         ),
         const SizedBox(width: AppDimens.paddingMd),
@@ -178,9 +197,12 @@ class Step2ClientDetailsView extends GetView<EventWizardController> {
             text: AppStrings.continueToFunction,
             onPressed: controller.nextStep,
             borderRadius: AppDimens.radiusMd,
+            height: 48,
+            hasShadow: true,
           ),
         ),
       ],
     );
   }
 }
+
