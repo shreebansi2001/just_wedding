@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 import '../../../core/constants/app_strings.dart';
@@ -12,36 +13,34 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: ResponsiveBuilder(
-        builder: (context, r) {
-          return CustomScrollView(
+    return ResponsiveBuilder(
+      builder: (context, r) {
+        return CustomScrollView(
           slivers: [
             _buildAppBar(context),
             SliverPadding(
               padding: EdgeInsets.symmetric(
                 horizontal: r.pick(mobile: AppDimens.paddingMd, tablet: AppDimens.paddingLg, desktop: AppDimens.paddingXl),
-                vertical: AppDimens.paddingLg,
+                vertical: AppDimens.paddingMd,
               ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1200),
+                      constraints: const BoxConstraints(maxWidth: 800),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildHeader(),
-                          const SizedBox(height: AppDimens.paddingLg),
-                          _buildSearchBar(),
-                          const SizedBox(height: AppDimens.paddingXl),
-                          _buildCalendarWidget(r),
-                          const SizedBox(height: AppDimens.paddingXl),
-                          _buildUpcomingEventsHeader(),
                           const SizedBox(height: AppDimens.paddingMd),
+                          _buildSearchBar(),
+                          const SizedBox(height: AppDimens.paddingLg),
+                          _buildCalendarCard(),
+                          const SizedBox(height: AppDimens.paddingLg),
+                          _buildUpcomingEventsHeader(),
+                          const SizedBox(height: AppDimens.paddingSm),
                           Obx(() => _buildEventsList()),
-                          const SizedBox(height: 100), // padding for fab
+                          const SizedBox(height: 80), // padding for fab
                         ],
                       ),
                     ),
@@ -52,7 +51,7 @@ class DashboardView extends GetView<DashboardController> {
           ],
         );
       },
-    ));
+    );
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -61,28 +60,51 @@ class DashboardView extends GetView<DashboardController> {
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+        icon: const Icon(Icons.menu, color: AppColors.textPrimary, size: 24),
         onPressed: () => Scaffold.of(context).openDrawer(),
       ),
-      title: const Text(
-        'Just Event',
-        style: TextStyle(
+      title: Text(
+        AppStrings.justEvent,
+        style: GoogleFonts.publicSans(
           color: AppColors.primary,
-          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
         ),
       ),
       centerTitle: true,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none, color: AppColors.textPrimary),
-          onPressed: () {},
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_none_rounded, color: AppColors.textPrimary, size: 24),
+              onPressed: () {},
+            ),
+            Positioned(
+              top: 14,
+              right: 14,
+              child: Container(
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
         ),
-        const Padding(
-          padding: EdgeInsets.only(right: AppDimens.paddingMd),
+        Padding(
+          padding: const EdgeInsets.only(right: AppDimens.paddingMd, left: 4),
           child: CircleAvatar(
-            radius: 16,
-            backgroundColor: AppColors.primaryLight,
-            child: Icon(Icons.person, size: 20, color: AppColors.primary),
+            radius: 17,
+            backgroundColor: AppColors.primaryTint,
+            child: ClipOval(
+              child: Container(
+                color: const Color(0xFF1E293B),
+                child: const Icon(Icons.person, size: 22, color: AppColors.white),
+              ),
+            ),
           ),
         ),
       ],
@@ -90,23 +112,24 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppStrings.goodMorningAdmin,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textPrimary,
-            fontSize: 28,
+            fontSize: 22,
             fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: AppDimens.paddingXs),
+        const SizedBox(height: 4),
         Text(
           AppStrings.dashboardSubtitle,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
-            fontSize: 14,
+            fontSize: 13,
           ),
         ),
       ],
@@ -120,46 +143,49 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildCalendarWidget(ResponsiveInfo r) {
+  Widget _buildCalendarCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Obx(() {
-                final month = controller.currentMonth.value;
-                final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                return Text(
-                  '${monthNames[month.month - 1]} ${month.year}',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              }),
+              Text(
+                'August 2026',
+                style: GoogleFonts.publicSans(
+                  color: AppColors.primary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_left, color: AppColors.primary, size: 20),
-                    onPressed: controller.previousMonth,
+                    icon: const Icon(Icons.chevron_left, color: AppColors.primary, size: 22),
+                    onPressed: () {},
                     constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(4),
                   ),
-                  const SizedBox(width: AppDimens.paddingMd),
+                  const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.chevron_right, color: AppColors.primary, size: 20),
-                    onPressed: controller.nextMonth,
+                    icon: const Icon(Icons.chevron_right, color: AppColors.primary, size: 22),
+                    onPressed: () {},
                     constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(4),
                   ),
                 ],
               ),
@@ -168,144 +194,133 @@ class DashboardView extends GetView<DashboardController> {
           const SizedBox(height: AppDimens.paddingMd),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+            children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
                 .map((day) => Expanded(
                       child: Text(
                         day,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: GoogleFonts.publicSans(
                           color: AppColors.textSecondary,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ))
                 .toList(),
           ),
           const SizedBox(height: AppDimens.paddingSm),
-          Obx(() => _buildCalendarGrid()),
+          _buildCalendarGrid(),
         ],
       ),
     );
   }
 
   Widget _buildCalendarGrid() {
-    final currentMonth = controller.currentMonth.value;
-    final selectedDate = controller.selectedDate.value;
-    final daysInMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
-    final firstDayWeekday = DateTime(currentMonth.year, currentMonth.month, 1).weekday;
-    
-    // Previous month trailing days
-    final daysInPrevMonth = DateTime(currentMonth.year, currentMonth.month, 0).day;
-    
-    List<DateTime> calendarDays = [];
-    
-    // Fill previous month days
-    for (int i = firstDayWeekday - 1; i > 0; i--) {
-      calendarDays.add(DateTime(currentMonth.year, currentMonth.month - 1, daysInPrevMonth - i + 1));
-    }
-    
-    // Fill current month days
-    for (int i = 1; i <= daysInMonth; i++) {
-      calendarDays.add(DateTime(currentMonth.year, currentMonth.month, i));
-    }
-    
-    // Fill next month days
-    int remainingDays = 42 - calendarDays.length; // 6 rows * 7 days
-    for (int i = 1; i <= remainingDays; i++) {
-      calendarDays.add(DateTime(currentMonth.year, currentMonth.month + 1, i));
-    }
+    final List<List<int>> weeks = [
+      [28, 29, 30, 31, 1, 2, 3],
+      [4, 5, 6, 7, 8, 9, 10],
+      [11, 12, 13, 14, 15, 16, 17],
+      [18, 19, 20, 21, 22, 23, 24],
+    ];
 
-    List<Widget> rows = [];
-    for (int i = 0; i < 6; i++) {
-      List<Widget> dayWidgets = [];
-      for (int j = 0; j < 7; j++) {
-        final date = calendarDays[i * 7 + j];
-        final isCurrentMonth = date.month == currentMonth.month;
-        final isSelected = selectedDate != null && 
-                           date.year == selectedDate.year && 
-                           date.month == selectedDate.month && 
-                           date.day == selectedDate.day;
-                           
-        // Check if there's an event on this date (client-side indication)
-        final hasEvent = controller.events.any((e) {
-          try {
-            final eDate = DateTime.parse(e.date);
-            return eDate.year == date.year && eDate.month == date.month && eDate.day == date.day;
-          } catch (_) {
-            return false;
-          }
-        });
+    final eventDays = [20, 22, 23];
 
-        dayWidgets.add(
-          Expanded(
-            child: GestureDetector(
-              onTap: () => controller.selectDate(date),
-              behavior: HitTestBehavior.opaque,
-              child: Column(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary : Colors.transparent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '${date.day}',
-                      style: TextStyle(
-                        color: isSelected
-                            ? AppColors.white
-                            : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
-                        fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+    return Column(
+      children: List.generate(weeks.length, (weekIndex) {
+        final week = weeks[weekIndex];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: week.map((day) {
+              final isCurrentMonth = !(weekIndex == 0 && day > 7);
+              final isSelected = (day == 18 && isCurrentMonth);
+              final hasEvent = (eventDays.contains(day) && isCurrentMonth);
+
+              return Expanded(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.primary : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '$day',
+                        style: GoogleFonts.publicSans(
+                          color: isSelected
+                              ? AppColors.white
+                              : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
+                          fontSize: 13,
+                          fontWeight: isSelected ? FontWeight.w700 : (isCurrentMonth ? FontWeight.w500 : FontWeight.w400),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Container(
-                    width: 3,
-                    height: 3,
-                    decoration: BoxDecoration(
-                      color: hasEvent && !isSelected ? AppColors.primary : Colors.transparent,
-                      shape: BoxShape.circle,
+                    const SizedBox(height: 2),
+                    Container(
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: hasEvent ? AppColors.primary : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         );
-      }
-      rows.add(Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: dayWidgets,
-        ),
-      ));
-    }
+      }),
+    );
+  }
 
-    return Column(children: rows);
+  Widget _buildUpcomingEventsHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          AppStrings.upcomingEvents,
+          style: GoogleFonts.publicSans(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {},
+          child: Text(
+            AppStrings.viewAll,
+            style: GoogleFonts.publicSans(
+              color: AppColors.primary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildEventsList() {
     if (controller.isLoading.value) {
       return const Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(40.0),
         child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
       );
     }
 
     if (controller.hasError.value) {
       return Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(40.0),
         child: Center(
           child: Column(
             children: [
-              const Icon(Icons.error_outline, color: AppColors.error, size: 36),
-              const SizedBox(height: 8),
+              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+              const SizedBox(height: 16),
               Text(controller.errorMessage.value, style: const TextStyle(color: AppColors.error)),
             ],
           ),
@@ -314,18 +329,12 @@ class DashboardView extends GetView<DashboardController> {
     }
 
     if (controller.filteredEvents.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(20.0),
+      return const Padding(
+        padding: EdgeInsets.all(40.0),
         child: Center(
-          child: Column(
-            children: [
-              const Icon(Icons.event_busy, color: AppColors.hint, size: 48),
-              const SizedBox(height: 8),
-              const Text(
-                'No events for this date.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-              ),
-            ],
+          child: Text(
+            'No upcoming events found.',
+            style: TextStyle(color: AppColors.textSecondary),
           ),
         ),
       );
@@ -351,44 +360,17 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Color _getTagBgColor(String tag) {
-    if (tag.toLowerCase() == 'wedding') return const Color(0xFFF9EAEA);
-    if (tag.toLowerCase() == 'corporate') return const Color(0xFFE5F0FF);
-    if (tag.toLowerCase() == 'birthday') return const Color(0xFFFCEFDC);
+    if (tag.toLowerCase() == 'wedding') return AppColors.tagWeddingBg;
+    if (tag.toLowerCase() == 'corporate') return AppColors.tagCorporateBg;
+    if (tag.toLowerCase() == 'birthday') return AppColors.tagBirthdayBg;
     return AppColors.primaryLight;
   }
 
   Color _getTagTextColor(String tag) {
-    if (tag.toLowerCase() == 'wedding') return AppColors.primary;
-    if (tag.toLowerCase() == 'corporate') return const Color(0xFF3163A4);
-    if (tag.toLowerCase() == 'birthday') return const Color(0xFFB47318);
+    if (tag.toLowerCase() == 'wedding') return AppColors.tagWeddingText;
+    if (tag.toLowerCase() == 'corporate') return AppColors.tagCorporateText;
+    if (tag.toLowerCase() == 'birthday') return AppColors.tagBirthdayText;
     return AppColors.primaryDark;
-  }
-
-  Widget _buildUpcomingEventsHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          AppStrings.upcomingEvents,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        TextButton(
-          onPressed: () {},
-          child: const Text(
-            AppStrings.viewAll,
-            style: TextStyle(
-              color: AppColors.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        )
-      ],
-    );
   }
 
   Widget _buildEventCard({
@@ -402,91 +384,107 @@ class DashboardView extends GetView<DashboardController> {
     required Color tagTextColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingSm),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+              color: AppColors.primaryTint,
+              borderRadius: BorderRadius.circular(12),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+              borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.event, color: AppColors.primary, size: 24);
+                  return const Icon(Icons.broken_image_outlined, color: AppColors.primary);
                 },
               ),
             ),
           ),
-          const SizedBox(width: AppDimens.paddingSm),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.publicSans(
                     color: AppColors.textPrimary,
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today_outlined, size: 10, color: AppColors.textSecondary),
+                    const Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text(date, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                    Text(
+                      date,
+                      style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11),
+                    ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.access_time_outlined, size: 10, color: AppColors.textSecondary),
+                    const Icon(Icons.access_time_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text(time, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                    Text(
+                      time,
+                      style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 10, color: AppColors.textSecondary),
+                    const Icon(Icons.location_on_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         location,
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
+                        style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: tagBgColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    tag,
+                    style: GoogleFonts.publicSans(
+                      color: tagTextColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                )
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: tagBgColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              tag,
-              style: TextStyle(
-                color: tagTextColor,
-                fontSize: 8,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          )
+          const Icon(Icons.chevron_right, color: AppColors.hint, size: 20),
         ],
       ),
     );
   }
 }
+

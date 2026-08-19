@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_dimens.dart';
 import '../../../../../core/constants/app_strings.dart';
@@ -24,20 +25,22 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
         const SizedBox(height: AppDimens.paddingLg),
         const AppTextField(
           hintText: AppStrings.searchFunctions,
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          prefixIcon: Icon(Icons.search, color: AppColors.hint, size: 20),
         ),
         const SizedBox(height: AppDimens.paddingMd),
         AppButton(
-          text: AppStrings.addFunction,
+          text: '+ Add Function',
           onPressed: () {},
           borderRadius: AppDimens.radiusMd,
+          height: 48,
+          hasShadow: true,
         ),
         const SizedBox(height: AppDimens.paddingLg),
         // Dynamic Function List
         Obx(() => Column(
           children: controller.functions.map((function) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: AppDimens.paddingLg),
+              padding: const EdgeInsets.only(bottom: AppDimens.paddingMd),
               child: _buildFunctionCard(
                 name: function.name,
                 icon: function.icon,
@@ -62,8 +65,12 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
               child: AppButton(
                 text: AppStrings.cancel,
                 isOutlined: true,
+                hasShadow: false,
+                textColor: AppColors.primary,
+                backgroundColor: AppColors.border,
                 onPressed: controller.previousStep,
                 borderRadius: AppDimens.radiusMd,
+                height: 48,
               ),
             ),
             const SizedBox(width: AppDimens.paddingMd),
@@ -73,6 +80,8 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                 text: AppStrings.continueToOther,
                 onPressed: controller.nextStep,
                 borderRadius: AppDimens.radiusMd,
+                height: 48,
+                hasShadow: true,
               ),
             ),
           ],
@@ -97,27 +106,34 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Left colored border
+            // Left colored border accent
             Container(
               width: 4,
               decoration: BoxDecoration(
                 color: borderColor,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppDimens.radiusLg),
-                  bottomLeft: Radius.circular(AppDimens.radiusLg),
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
                 ),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(AppDimens.paddingLg),
+                padding: const EdgeInsets.all(AppDimens.paddingMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -130,34 +146,34 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                             color: iconBgColor,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(icon, color: iconColor, size: 24),
+                          child: Icon(icon, color: iconColor, size: 20),
                         ),
-                        const SizedBox(width: AppDimens.paddingMd),
+                        const SizedBox(width: AppDimens.paddingSm),
                         Expanded(
                           child: Text(
                             name,
-                            style: const TextStyle(
+                            style: GoogleFonts.publicSans(
                               color: AppColors.textPrimary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.chat_bubble_outline, size: 20, color: AppColors.textSecondary),
+                          icon: const Icon(Icons.chat_bubble_outline, size: 18, color: AppColors.hint),
                           onPressed: () {},
                           constraints: const BoxConstraints(),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 20, color: AppColors.error),
+                          icon: const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
                           onPressed: () {},
                           constraints: const BoxConstraints(),
                           padding: EdgeInsets.zero,
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppDimens.paddingLg),
+                    const SizedBox(height: AppDimens.paddingMd),
 
                     // Date & Time row
                     if (isFilledData) ...[
@@ -169,7 +185,14 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                               children: [
                                 _buildIconLabel(Icons.calendar_today_outlined, AppStrings.date),
                                 const SizedBox(height: 4),
-                                Text(date ?? '', style: const TextStyle(fontSize: 14)),
+                                Text(
+                                  date ?? '',
+                                  style: GoogleFonts.publicSans(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -179,7 +202,14 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                               children: [
                                 _buildIconLabel(Icons.access_time, AppStrings.time),
                                 const SizedBox(height: 4),
-                                Text(time ?? '', style: const TextStyle(fontSize: 14)),
+                                Text(
+                                  time ?? '',
+                                  style: GoogleFonts.publicSans(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -195,7 +225,7 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                                 _buildFieldLabel(AppStrings.date),
                                 const AppTextField(
                                   hintText: 'mm/dd/yyyy',
-                                  prefixIcon: Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSecondary),
+                                  prefixIcon: Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
                                 ),
                               ],
                             ),
@@ -208,7 +238,7 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                                 _buildFieldLabel(AppStrings.time),
                                 const AppTextField(
                                   hintText: '--:-- --',
-                                  prefixIcon: Icon(Icons.access_time, size: 18, color: AppColors.textSecondary),
+                                  prefixIcon: Icon(Icons.access_time, size: 18, color: AppColors.hint),
                                 ),
                               ],
                             ),
@@ -223,7 +253,7 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                     const SizedBox(height: 4),
                     AppTextField(
                       hintText: venue,
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
                     ),
                     const SizedBox(height: AppDimens.paddingMd),
 
@@ -232,7 +262,7 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
                     const SizedBox(height: 4),
                     AppTextField(
                       hintText: subVenue,
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
                     ),
                   ],
                 ),
@@ -249,7 +279,7 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
       padding: const EdgeInsets.only(bottom: AppDimens.paddingXs),
       child: Text(
         text,
-        style: const TextStyle(
+        style: GoogleFonts.publicSans(
           color: AppColors.textPrimary,
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -265,7 +295,7 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
         const SizedBox(width: 4),
         Text(
           text,
-          style: const TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -275,3 +305,4 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
     );
   }
 }
+

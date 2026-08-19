@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -16,25 +17,25 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
+        Text(
           AppStrings.rsvpDetails,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textPrimary,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
         ),
-        const SizedBox(height: AppDimens.paddingXs),
-        const Text(
+        const SizedBox(height: 4),
+        Text(
           AppStrings.rsvpDetailsSubtitle,
-          style: TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
             fontSize: 13,
             height: 1.4,
           ),
         ),
         const SizedBox(height: AppDimens.paddingLg),
-        const RsvpStepper(currentStep: 1),
+        const RsvpStepper(currentStep: 4),
         const SizedBox(height: AppDimens.paddingLg),
         _buildPartyToggle(),
         const SizedBox(height: AppDimens.paddingLg),
@@ -54,27 +55,27 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
     return Obx(() {
       final isGroom = controller.selectedParty.value == 'Groom';
       return Container(
-        padding: const EdgeInsets.all(AppDimens.paddingXs),
+        height: 44,
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: const Color(0xFFF3F4F6),
-          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+          color: const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
             Expanded(
               child: GestureDetector(
                 onTap: () => controller.setParty('Groom'),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isGroom ? AppColors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
-                    border: isGroom ? Border.all(color: AppColors.primaryLight) : null,
+                    borderRadius: BorderRadius.circular(8),
                     boxShadow: isGroom
                         ? [
                             BoxShadow(
-                              color: Colors.black.withAlpha(10),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -83,10 +84,10 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                   ),
                   child: Text(
                     AppStrings.groom,
-                    style: TextStyle(
+                    style: GoogleFonts.publicSans(
                       color: isGroom ? AppColors.primary : AppColors.textSecondary,
                       fontWeight: isGroom ? FontWeight.w700 : FontWeight.w500,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -95,17 +96,16 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
             Expanded(
               child: GestureDetector(
                 onTap: () => controller.setParty('Bride'),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: !isGroom ? AppColors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
-                    border: !isGroom ? Border.all(color: AppColors.primaryLight) : null,
+                    borderRadius: BorderRadius.circular(8),
                     boxShadow: !isGroom
                         ? [
                             BoxShadow(
-                              color: Colors.black.withAlpha(10),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -114,10 +114,10 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                   ),
                   child: Text(
                     AppStrings.bride,
-                    style: TextStyle(
+                    style: GoogleFonts.publicSans(
                       color: !isGroom ? AppColors.primary : AppColors.textSecondary,
                       fontWeight: !isGroom ? FontWeight.w700 : FontWeight.w500,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -131,11 +131,18 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
 
   Widget _buildEventInfoCard() {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,8 +151,8 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryLight,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTint,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -155,24 +162,24 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                 ),
               ),
               const SizedBox(width: AppDimens.paddingSm),
-              const Text(
+              Text(
                 AppStrings.eventInformation,
-                style: TextStyle(
+                style: GoogleFonts.publicSans(
                   color: AppColors.textPrimary,
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.venueName),
           const AppTextField(
-            hintText: AppStrings.venueSearchPlaceholder,
+            hintText: 'Search or select a venue',
             prefixIcon: Icon(
               Icons.search,
-              size: 20,
-              color: AppColors.textSecondary,
+              size: 18,
+              color: AppColors.hint,
             ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
@@ -182,7 +189,7 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
             suffixIcon: Icon(
               Icons.calendar_today_outlined,
               size: 18,
-              color: AppColors.textSecondary,
+              color: AppColors.hint,
             ),
           ),
         ],
@@ -192,11 +199,18 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
 
   Widget _buildLocationCard() {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,8 +219,8 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryLight,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTint,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -216,19 +230,19 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                 ),
               ),
               const SizedBox(width: AppDimens.paddingSm),
-              const Text(
+              Text(
                 AppStrings.locationLogistics,
-                style: TextStyle(
+                style: GoogleFonts.publicSans(
                   color: AppColors.textPrimary,
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.streetAddress),
-          const AppTextField(hintText: AppStrings.sampleStreetAddress),
+          const AppTextField(hintText: '123 Main St, Suite 100'),
           const SizedBox(height: AppDimens.paddingMd),
           Row(
             children: [
@@ -237,7 +251,7 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldLabel(AppStrings.city),
-                    const AppTextField(hintText: AppStrings.newYork),
+                    const AppTextField(hintText: 'New York'),
                   ],
                 ),
               ),
@@ -248,10 +262,10 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                   children: [
                     _buildFieldLabel(AppStrings.country),
                     const AppTextField(
-                      hintText: AppStrings.unitedStates,
+                      hintText: 'United States',
                       suffixIcon: Icon(
                         Icons.keyboard_arrow_down,
-                        color: AppColors.textSecondary,
+                        color: AppColors.hint,
                       ),
                     ),
                   ],
@@ -266,17 +280,18 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
             return GestureDetector(
               onTap: controller.toggleAdvancedLocation,
               child: Container(
-                padding: const EdgeInsets.all(AppDimens.paddingMd),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                 decoration: BoxDecoration(
+                  color: const Color(0xFFFAFAFA),
                   border: Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.circular(AppDimens.radiusMd),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      AppStrings.advancedLocation,
-                      style: TextStyle(
+                    Text(
+                      'Advanced Location (Lat/Long)',
+                      style: GoogleFonts.publicSans(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
@@ -284,7 +299,7 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                     ),
                     Icon(
                       isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                      color: AppColors.textSecondary,
+                      color: AppColors.hint,
                       size: 20,
                     ),
                   ],
@@ -299,11 +314,18 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
 
   Widget _buildEventImageryCard() {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingLg),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,8 +334,8 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryLight,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTint,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -323,24 +345,24 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                 ),
               ),
               const SizedBox(width: AppDimens.paddingSm),
-              const Text(
+              Text(
                 AppStrings.eventImagery,
-                style: TextStyle(
+                style: GoogleFonts.publicSans(
                   color: AppColors.textPrimary,
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: AppColors.primaryTint,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
+                child: Text(
                   AppStrings.ratio169,
-                  style: TextStyle(
+                  style: GoogleFonts.publicSans(
                     color: AppColors.primary,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
@@ -349,44 +371,44 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingSm),
-          const Text(
+          const SizedBox(height: 6),
+          Text(
             AppStrings.eventImageryDesc,
-            style: TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.textSecondary,
               fontSize: 12,
               height: 1.4,
             ),
           ),
-          const SizedBox(height: AppDimens.paddingLg),
+          const SizedBox(height: AppDimens.paddingMd),
           Row(
             children: [
-              // Add Photo Dashed Box
+              // Add Photo Box
               Container(
                 width: 90,
-                height: 80,
+                height: 75,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFAFAFA),
-                  borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                  borderRadius: BorderRadius.circular(AppDimens.radiusMd),
                   border: Border.all(
                     color: AppColors.border,
                     style: BorderStyle.solid,
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.add_photo_alternate_outlined,
-                      color: AppColors.textSecondary,
-                      size: 24,
+                      color: AppColors.hint,
+                      size: 22,
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       AppStrings.addPhoto,
-                      style: TextStyle(
+                      style: GoogleFonts.publicSans(
                         color: AppColors.textSecondary,
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -399,13 +421,13 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                 children: [
                   Container(
                     width: 90,
-                    height: 80,
+                    height: 75,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                      color: AppColors.primaryTint,
+                      borderRadius: BorderRadius.circular(AppDimens.radiusMd),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                      borderRadius: BorderRadius.circular(AppDimens.radiusMd),
                       child: Image.network(
                         'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=200&q=80',
                         fit: BoxFit.cover,
@@ -422,15 +444,15 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
                     top: 4,
                     right: 4,
                     child: Container(
-                      width: 18,
-                      height: 18,
+                      width: 16,
+                      height: 16,
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.close,
-                        size: 12,
+                        size: 11,
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -449,10 +471,10 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
       padding: const EdgeInsets.only(bottom: AppDimens.paddingXs),
       child: Text(
         text,
-        style: const TextStyle(
+        style: GoogleFonts.publicSans(
           color: AppColors.textPrimary,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -466,17 +488,23 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
           child: AppButton(
             text: AppStrings.saveDraft,
             isOutlined: true,
+            hasShadow: false,
+            textColor: AppColors.textPrimary,
+            backgroundColor: AppColors.border,
             onPressed: controller.saveDraft,
             borderRadius: AppDimens.radiusMd,
+            height: 48,
           ),
         ),
         const SizedBox(width: AppDimens.paddingMd),
         Expanded(
           flex: 1,
           child: AppButton(
-            text: AppStrings.nextStepArrow,
+            text: 'Next Step',
             onPressed: controller.nextStep,
             borderRadius: AppDimens.radiusMd,
+            height: 48,
+            hasShadow: true,
             icon: const Icon(
               Icons.arrow_forward,
               color: AppColors.white,
@@ -488,3 +516,4 @@ class Step1RsvpDetailsView extends GetView<CreateRsvpController> {
     );
   }
 }
+

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -25,11 +26,11 @@ class RsvpStepper extends StatelessWidget {
       children: [
         Text(
           'STEP $currentStep OF 4',
-          style: const TextStyle(
+          style: GoogleFonts.publicSans(
             color: AppColors.textSecondary,
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
-            letterSpacing: 0.8,
+            letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: AppDimens.paddingSm),
@@ -53,11 +54,9 @@ class RsvpStepper extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: isCurrent
                               ? AppColors.primary
-                              : isCompleted
-                                  ? const Color(0xFFE5E7EB)
-                                  : const Color(0xFFF3F4F6),
+                              : const Color(0xFFF1F5F9),
                           border: isCompleted
-                              ? Border.all(color: const Color(0xFFD1D5DB))
+                              ? Border.all(color: const Color(0xFFE2E8F0))
                               : null,
                         ),
                         child: Center(
@@ -70,9 +69,9 @@ class RsvpStepper extends StatelessWidget {
                               : isCurrent
                                   ? Text(
                                       '$stepIndex',
-                                      style: const TextStyle(
+                                      style: GoogleFonts.publicSans(
                                         color: AppColors.white,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 13,
                                       ),
                                     )
@@ -86,11 +85,11 @@ class RsvpStepper extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         steps[index],
-                        style: TextStyle(
+                        style: GoogleFonts.publicSans(
                           color: isCurrent ? AppColors.primary : AppColors.textSecondary,
                           fontSize: 10,
                           fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w600,
-                          letterSpacing: 0.5,
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ],
@@ -101,9 +100,7 @@ class RsvpStepper extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 18),
                         child: Container(
                           height: 1.5,
-                          color: stepIndex < currentStep
-                              ? AppColors.primary
-                              : const Color(0xFFE5E7EB),
+                          color: const Color(0xFFE2E8F0),
                         ),
                       ),
                     ),
@@ -116,3 +113,4 @@ class RsvpStepper extends StatelessWidget {
     );
   }
 }
+

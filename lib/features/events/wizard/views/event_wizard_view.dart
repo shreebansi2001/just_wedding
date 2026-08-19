@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/app_page_container.dart';
@@ -20,7 +21,7 @@ class EventWizardView extends GetView<EventWizardController> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: controller.previousStep,
         ),
         title: Obx(() {
@@ -32,14 +33,14 @@ class EventWizardView extends GetView<EventWizardController> {
           };
           return Text(
             titles[controller.currentStep.value] ?? AppStrings.eventDetails,
-            style: const TextStyle(
+            style: GoogleFonts.publicSans(
               color: AppColors.primary,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
           );
         }),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: SafeArea(
         child: AppPageContainer(
@@ -65,3 +66,4 @@ class EventWizardView extends GetView<EventWizardController> {
     );
   }
 }
+
