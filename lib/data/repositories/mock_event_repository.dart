@@ -39,7 +39,7 @@ class MockEventRepository implements EventRepository {
   }
 
   @override
-  Future<List<EventModel>> getEvents() async {
+  Future<List<EventModel>> getEventsFiltered({String? search, String? toDate, int page = 0, int size = 10}) async {
     await _simulateDelay();
     return List.from(_events);
   }
@@ -76,11 +76,16 @@ class MockEventRepository implements EventRepository {
 
   // Phase 2 specific methods stubbed
   @override
-  Future<List<EventTypeMasterRequestDto>> getEventTypes() async {
+  Future<List<EventTypeMasterRequestDto>> getEventTypes({String search = "", int size = 100}) async {
     return [
       EventTypeMasterRequestDto(id: 1, nameEnglish: 'Wedding'),
       EventTypeMasterRequestDto(id: 2, nameEnglish: 'Corporate'),
     ];
+  }
+
+  @override
+  Future<List<PartyResponseDto>> getParties(int categoryTypeId, {String search = ""}) async {
+    return [];
   }
 
   @override

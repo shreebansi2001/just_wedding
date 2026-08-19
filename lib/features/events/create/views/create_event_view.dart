@@ -230,13 +230,13 @@ class CreateEventView extends GetView<CreateEventController> {
       itemCount: controller.eventTypes.length,
       itemBuilder: (context, index) {
         final item = controller.eventTypes[index];
-        final name = item['name']!;
-        final icon = item['icon']!;
+        final name = item.nameEnglish ?? 'Unknown';
+        final icon = '🗓️'; // Placeholder since imgPath requires network image
 
         return Obx(() {
-          final isSelected = controller.eventType.value == name;
+          final isSelected = controller.selectedEventTypeId.value == item.id;
           return GestureDetector(
-            onTap: () => controller.selectType(name),
+            onTap: () => controller.selectType(item.id),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               decoration: BoxDecoration(
@@ -290,12 +290,13 @@ class CreateEventView extends GetView<CreateEventController> {
         border: Border.all(color: AppColors.border, width: 1),
       ),
       child: Obx(() {
+        final prioritiesList = ['High', 'Med', 'Low'];
         return Row(
-          children: controller.priorities.map((p) {
-            final isSelected = controller.priority.value == p;
+          children: prioritiesList.map((p) {
+            final isSelected = controller.selectedPriority.value == p;
             return Expanded(
               child: GestureDetector(
-                onTap: () => controller.selectPriority(p),
+                onTap: () => controller.setPriority(p),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
                   alignment: Alignment.center,

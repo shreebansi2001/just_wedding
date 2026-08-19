@@ -14,6 +14,7 @@ class AppButton extends StatelessWidget {
   final Widget? icon;
   final double? borderRadius;
   final double? height;
+  final bool hasShadow;
 
   const AppButton({
     super.key,
@@ -27,6 +28,7 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.borderRadius,
     this.height,
+    this.hasShadow = false,
   });
 
   @override
@@ -72,7 +74,7 @@ class AppButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius),
           ),
-          elevation: 0,
+          elevation: hasShadow ? 4 : 0,
         ),
         child: isLoading
             ? const SizedBox(

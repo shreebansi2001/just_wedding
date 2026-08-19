@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_dimens.dart';
@@ -15,6 +16,7 @@ class AppTextField extends StatelessWidget {
   final Function(String)? onChanged;
   final bool readOnly;
   final VoidCallback? onTap;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextField({
     super.key,
@@ -29,6 +31,7 @@ class AppTextField extends StatelessWidget {
     this.onChanged,
     this.readOnly = false,
     this.onTap,
+    this.inputFormatters,
   });
 
   @override
@@ -42,6 +45,7 @@ class AppTextField extends StatelessWidget {
       onChanged: onChanged,
       readOnly: readOnly,
       onTap: onTap,
+      inputFormatters: inputFormatters,
       style: GoogleFonts.publicSans(
         fontSize: 14,
         fontWeight: FontWeight.w500,
