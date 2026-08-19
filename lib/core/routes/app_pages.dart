@@ -23,6 +23,9 @@ import '../../features/quotation/views/quotation_view.dart';
 import '../../features/quotation/bindings/quotation_binding.dart';
 import '../../features/followup/views/follow_up_view.dart';
 import '../../features/followup/bindings/follow_up_binding.dart';
+import '../../features/events/execution/views/event_execution_view.dart';
+import '../../features/events/execution/bindings/event_execution_binding.dart';
+import '../../features/events/execution/views/item_details_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -101,6 +104,17 @@ class AppPages {
       name: AppRoutes.followUp,
       page: () => const FollowUpView(),
       binding: FollowUpBinding(),
+      transition: Transition.rightToLeftWithFade,
+    ),
+    GetPage(
+      name: AppRoutes.eventExecution,
+      page: () => const EventExecutionView(),
+      binding: EventExecutionBinding(),
+      transition: Transition.rightToLeftWithFade,
+    ),
+    GetPage(
+      name: AppRoutes.itemDetails,
+      page: () => const ItemDetailsView(),
       transition: Transition.rightToLeftWithFade,
     ),
   ];

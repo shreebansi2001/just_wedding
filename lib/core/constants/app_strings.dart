@@ -403,4 +403,94 @@ class AppStrings {
   static const String totalAmount = 'Total Amount';
   static const String sampleFunctionSummaryGrand = '₹ 3,55,400';
   static const String close = 'CLOSE';
+
+  // --- Execution & Modules ---
+  static const String eventFlower = 'Event Flower';
+  static const String globalTechSummit = "Global Tech Summit '24";
+  static const String acmeCorpInternational = 'Acme Corp International';
+  static const String grandHorizonCenter = 'Grand Horizon Center';
+  static const String sampleEventDates = 'Oct 12, 2026 - Oct 15, 2026';
+  static const String eventCodeSample = 'EV-203-042';
+  static const String live = 'LIVE';
+  static const String save = 'Save';
+  static const String total = 'Total';
+  static const String present = 'Present';
+  static const String goTo = 'Go To';
+  static const String executionDetails = 'Execution Details';
+  static const String referenceUpper = 'REFERENCE';
+  static const String enterReference = 'Enter reference';
+  static const String productionInchargeUpper = 'PRODUCTION INCHARGE';
+  static const String selectIncharge = 'Select Incharge';
+  static const String noteUpper = 'NOTE';
+  static const String addSpecialRemarks = 'Add any special remarks...';
+  static const String setupUpper = 'SETUP';
+  static const String dismantleUpper = 'DISMANTLE';
+  static const String galaDinner = 'Gala Dinner';
+  static const String searchItems = 'Search items...';
+  static const String flowersAndProps = 'Flowers & Props';
+  static const String vendorVishalBhai = 'Vendor: Vishal Bhai';
+  static const String decorativeLighting = 'Decorative Lighting';
+  static const String vendorLuminaEvents = 'Vendor: Lumina Events';
+  static const String floralCenterpieces = 'Floral Centerpieces';
+  static const String qtyUpper = 'QTY';
+  static const String rateUpper = 'RATE';
+  static const String totalUpper = 'TOTAL';
+
+  // --- Go To Module Popup ---
+  static const String selectModule = 'Select Module';
+  static const String chooseSectionToManage = 'Choose a section to manage';
+  static const String clientModuleUpper = 'CLIENT MODULE';
+  static const String editDetails = 'Edit Details';
+  static const String modifyEventInfo = 'Modify event information';
+  static const String estimate = 'Estimate';
+  static const String manageQuotesBilling = 'Manage quotes and billing';
+  static const String trackEventProgress = 'Track event progress';
+  static const String executionModulesUpper = 'EXECUTION MODULES';
+  static const String fourteenItems = '14 Items';
+  static const String flower = 'Flower';
+  static const String lighting = 'Lighting';
+  static const String ledWall = 'LED Wall';
+  static const String sound = 'Sound';
+  static const String mandap = 'Mandap';
+  static const String furniture = 'Furniture';
+  static const String printing = 'Printing';
+  static const String sfx = 'SFX';
+  static const String purchaseItem = 'Purchase Item';
+  static const String godown = 'Godown';
+  static const String artistAndEnt = 'Artist & Ent.';
+  static const String outsource = 'Outsource';
+  static const String newMaking = 'New Making';
+  static const String labour = 'Labour';
+
+  // --- Item Details (Decorative Lighting / Flower) ---
+  static const String itemDetailsUpper = 'ITEM DETAILS';
+  static const String itemNameUpper = 'ITEM NAME';
+  static const String descriptionUpper = 'DESCRIPTION';
+  static const String sampleItemDesc = 'Warm white LED fairy lights, 10m rolls';
+  static const String vendorUpper = 'VENDOR';
+  static const String unitUpper = 'UNIT';
+  static const String rolls = 'Rolls';
+  static const String dateUpper = 'DATE';
+  static const String timeUpper = 'TIME';
+  static const String basePriceUpper = 'BASE PRICE (₹)';
+  static const String totalQtyUpper = 'TOTAL QTY';
+  static const String placementItemsUpper = 'PLACEMENT (ITEMS)';
+  static const String welcomeBoard = 'Welcome Board';
+  static const String entryGate = 'Entry Gate';
+  static const String props = 'Props';
+  static const String artisteStagePlatform = 'Artiste Stage Platform';
+  static const String allocatedTotalUpper = 'ALLOCATED TOTAL';
+  static const String referenceImageUpper = 'REFERENCE IMAGE';
+  static const String noImageUploaded = 'No image uploaded';
+  static const String changeImage = 'Change Image';
+  static const String sendSmsUpdate = 'Send SMS Update';
+
+  // --- Add Item Popup ---
+  static const String itemMainCategory = 'Item Main Category *';
+  static const String unitType = 'Unit Type *';
+  static const String saveChanges = 'Save Changes';
+
+  // --- Events Popup ---
+  static const String searchEventsPlaceholder = 'Search by name, code, type or date...';
 }
+

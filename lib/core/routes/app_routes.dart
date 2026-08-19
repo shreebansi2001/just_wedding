@@ -13,4 +13,6 @@ abstract class AppRoutes {
   static const String rsvpReady = '/rsvp-ready';
   static const String quotation = '/quotation';
   static const String followUp = '/follow-up';
+  static const String eventExecution = '/event-execution';
+  static const String itemDetails = '/item-details';
 }
