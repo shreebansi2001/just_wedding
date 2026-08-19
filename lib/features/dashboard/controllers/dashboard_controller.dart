@@ -22,6 +22,8 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final now = DateTime.now();
+    selectedDate.value = DateTime(now.year, now.month, now.day);
     fetchDashboardData();
   }
 

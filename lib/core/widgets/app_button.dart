@@ -93,9 +93,13 @@ class AppButton extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            text,
-            style: AppTextStyles.heading.copyWith(color: color),
+          Flexible(
+            child: Text(
+              text,
+              style: AppTextStyles.heading.copyWith(color: color),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
           const SizedBox(width: 8),
           icon!,
