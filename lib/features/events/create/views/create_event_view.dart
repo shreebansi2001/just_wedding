@@ -38,6 +38,7 @@ class CreateEventView extends GetView<CreateEventController> {
                   _buildLabel(AppStrings.eventName),
                   const SizedBox(height: AppDimens.paddingSm),
                   AppTextField(
+                    controller: controller.eventNameController,
                     hintText: AppStrings.eventNameHint,
                     prefixIcon: Container(
                       padding: const EdgeInsets.all(4),
@@ -47,13 +48,22 @@ class CreateEventView extends GetView<CreateEventController> {
                   const SizedBox(height: AppDimens.paddingLg),
                   _buildLabel(AppStrings.eventType),
                   const SizedBox(height: AppDimens.paddingSm),
+                  AppTextField(
+                    hintText: 'Search event type...',
+                    prefixIcon: const Icon(Icons.search, color: AppColors.hint, size: 20),
+                    onChanged: controller.onSearchChanged,
+                  ),
+                  const SizedBox(height: AppDimens.paddingMd),
                   _buildEventTypeGrid(),
                   const SizedBox(height: AppDimens.paddingLg),
                   _buildLabel(AppStrings.eventDate),
                   const SizedBox(height: AppDimens.paddingSm),
-                  const AppTextField(
+                  AppTextField(
+                    controller: controller.eventDateController,
                     hintText: 'mm/dd/yyyy',
-                    suffixIcon: Icon(Icons.calendar_today_outlined, color: AppColors.hint, size: 20),
+                    readOnly: true,
+                    onTap: () => controller.selectDate(context),
+                    suffixIcon: const Icon(Icons.calendar_today_outlined, color: AppColors.hint, size: 20),
                   ),
                   const SizedBox(height: AppDimens.paddingLg),
                   _buildLabel(AppStrings.priority),
@@ -218,75 +228,91 @@ class CreateEventView extends GetView<CreateEventController> {
   }
 
   Widget _buildEventTypeGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1.05,
-      ),
-      itemCount: controller.eventTypes.length,
-      itemBuilder: (context, index) {
-        final item = controller.eventTypes[index];
-        final name = item.nameEnglish ?? 'Unknown';
-        final imgPath = item.imgPath;
-        final Widget iconWidget = (imgPath != null && imgPath.isNotEmpty)
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  imgPath,
-                  width: 36,
-                  height: 36,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Text('🗓️', style: TextStyle(fontSize: 24)),
-                ),
-              )
-            : const Text('🗓️', style: TextStyle(fontSize: 24));
+    return Obx(() {
+      if (controller.isLoadingTypes.value) {
+        return const Padding(
+          padding: EdgeInsets.all(AppDimens.paddingLg),
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+      
+      if (controller.eventTypes.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(AppDimens.paddingMd),
+          child: Text('No event types found.', style: TextStyle(color: AppColors.textSecondary)),
+        );
+      }
 
-        return Obx(() {
-          final isSelected = controller.selectedEventTypeId.value == item.id;
-          return GestureDetector(
-            onTap: () => controller.selectType(item.id),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryTint.withValues(alpha: 0.6) : AppColors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.border,
-                  width: isSelected ? 1.5 : 1.0,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 1.05,
+        ),
+        itemCount: controller.eventTypes.length,
+        itemBuilder: (context, index) {
+          final item = controller.eventTypes[index];
+          final name = item.nameEnglish ?? 'Unknown';
+          final imgPath = item.imgPath;
+          final Widget iconWidget = (imgPath != null && imgPath.isNotEmpty)
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.network(
+                    imgPath,
+                    width: 36,
+                    height: 36,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const Text('🗓️', style: TextStyle(fontSize: 24)),
                   ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  iconWidget,
-                  const SizedBox(height: 6),
-                  Text(
-                    name,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.publicSans(
-                      color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                      fontSize: 11.5,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                )
+              : const Text('🗓️', style: TextStyle(fontSize: 24));
+
+          return Obx(() {
+            final isSelected = controller.selectedEventTypeId.value == item.id;
+            return GestureDetector(
+              onTap: () => controller.selectType(item.id),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primaryTint.withValues(alpha: 0.6) : AppColors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : AppColors.border,
+                    width: isSelected ? 1.5 : 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    iconWidget,
+                    const SizedBox(height: 6),
+                    Text(
+                      name,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.publicSans(
+                        color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                        fontSize: 11.5,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        });
-      },
-    );
+            );
+          });
+        },
+      );
+    });
   }
 
   Widget _buildPrioritySegmentedControl() {

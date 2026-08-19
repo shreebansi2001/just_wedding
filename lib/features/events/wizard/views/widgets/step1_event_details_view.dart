@@ -30,20 +30,6 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildLabel(AppStrings.clientId),
-                AppTextField(
-                  hintText: AppStrings.clientIdHint,
-                  readOnly: true,
-                  controller: TextEditingController(text: controller.clientId.value),
-                ),
-                const SizedBox(height: AppDimens.paddingMd),
-                _buildLabel(AppStrings.eventNameRequired),
-                AppTextField(
-                  hintText: AppStrings.eventNameWizardHint,
-                  controller: controller.eventNameController,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: AppDimens.paddingMd),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -51,12 +37,13 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildLabel(AppStrings.inquiryDate),
+                          _buildLabel('Inquiry Date'),
                           AppTextField(
-                            hintText: 'mm/dd/yyyy',
+                            hintText: 'dd/mm/yyyy',
                             controller: controller.inquiryDateController,
                             readOnly: true,
                             onTap: () => controller.selectDate(context, controller.inquiryDateController),
+                            suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
                           ),
                         ],
                       ),
@@ -66,17 +53,58 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildLabel(AppStrings.status),
-                          AppTextField(
-                            hintText: AppStrings.statusPlanning,
-                            controller: controller.statusController,
-                            readOnly: true,
-                            suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildLabel('Event Type *'),
+                              InkWell(
+                                onTap: () {},
+                                child: Text('+ Add New', style: GoogleFonts.publicSans(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600)),
+                              ),
+                            ],
+                          ),
+                          PopupMenuButton<int>(
+                            onSelected: (id) {
+                              final type = controller.eventTypes.firstWhereOrNull((e) => e.id == id);
+                              if (type != null) {
+                                controller.eventTypeId.value = type.id;
+                                controller.eventTypeController.text = type.nameEnglish ?? '';
+                              }
+                            },
+                            itemBuilder: (context) => controller.eventTypes.map((t) => 
+                              PopupMenuItem(value: t.id, child: Text(t.nameEnglish ?? ''))
+                            ).toList(),
+                            child: IgnorePointer(
+                              child: AppTextField(
+                                controller: controller.eventTypeController,
+                                hintText: 'Select Event Type',
+                                readOnly: true,
+                                suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: AppDimens.paddingMd),
+                _buildLabel('Event Status *'),
+                PopupMenuButton<String>(
+                  onSelected: (status) {
+                    controller.statusController.text = status;
+                  },
+                  itemBuilder: (context) => controller.statusOptions.map((s) => 
+                    PopupMenuItem(value: s, child: Text(s))
+                  ).toList(),
+                  child: IgnorePointer(
+                    child: AppTextField(
+                      controller: controller.statusController,
+                      hintText: 'Select Status',
+                      readOnly: true,
+                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -188,23 +216,30 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
         ),
         const SizedBox(height: AppDimens.paddingLg),
         _buildSectionCard(
-          title: AppStrings.venueDetails,
+          title: 'VENUE INFORMATION',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildLabel(AppStrings.preferredVenue),
-              AppTextField(
-                hintText: AppStrings.preferredVenueHint,
-                controller: controller.preferredVenueController,
-                prefixIcon: const Icon(Icons.location_on_outlined, size: 18, color: AppColors.hint),
-                suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
-              ),
-              const SizedBox(height: AppDimens.paddingMd),
-              _buildLabel(AppStrings.specialInstructions),
-              AppTextField(
-                hintText: AppStrings.specialInstructionsHint,
-                controller: controller.remarksController,
-                maxLines: 3,
+              _buildLabel('Venue *'),
+              PopupMenuButton<int>(
+                onSelected: (id) {
+                  final v = controller.venues.firstWhereOrNull((e) => e.id == id);
+                  if (v != null) {
+                    controller.selectedVenueId.value = v.id;
+                    controller.preferredVenueController.text = v.nameEnglish ?? '';
+                  }
+                },
+                itemBuilder: (context) => controller.venues.map((v) => 
+                  PopupMenuItem(value: v.id, child: Text(v.nameEnglish ?? ''))
+                ).toList(),
+                child: IgnorePointer(
+                  child: AppTextField(
+                    controller: controller.preferredVenueController,
+                    hintText: 'Search or select a venue...',
+                    readOnly: true,
+                    suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                  ),
+                ),
               ),
             ],
           ),

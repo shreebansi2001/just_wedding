@@ -4,6 +4,7 @@ import '../../../../core/routes/app_routes.dart';
 import '../../../../domain/models/event_dtos.dart';
 import '../../../../domain/repositories/event_repository.dart';
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 class CreateEventController extends GetxController {
   final EventRepository _eventRepository = Get.find<EventRepository>();
@@ -65,7 +66,7 @@ class CreateEventController extends GetxController {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      eventDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      eventDateController.text = DateFormat('dd/MM/yyyy').format(picked);
     }
   }
 
@@ -82,7 +83,7 @@ class CreateEventController extends GetxController {
         id: 0,
         projectName: eventNameController.text,
         eventTypeId: selectedEventTypeId.value!,
-        inquiryDate: "", // Or maybe today's date if needed, we'll let it be empty or default
+        inquiryDate: DateFormat('dd/MM/yyyy').format(DateTime.now()), // Set inquiry date
         eventStartDate: eventDateController.text,
         eventStartTime: "",
         eventEndDate: "",

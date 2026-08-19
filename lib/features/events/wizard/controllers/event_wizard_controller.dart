@@ -27,6 +27,7 @@ class EventWizardController extends GetxController {
   final eventTypeController = TextEditingController(); // Added for DTO mapping
   final eventTypeId = 0.obs; // Added for DTO mapping
   final priority = 'Med'.obs;
+  final statusOptions = ['Inquiry', 'Confirmed', 'Cancelled'].obs;
 
   final startDateController = TextEditingController();
   final startTimeController = TextEditingController();
@@ -35,6 +36,7 @@ class EventWizardController extends GetxController {
 
   final estimatedBudgetController = TextEditingController();
   final preferredVenueController = TextEditingController();
+  final selectedVenueId = Rxn<int>();
   final remarksController = TextEditingController();
 
   // Step 2: Client Details
@@ -60,7 +62,7 @@ class EventWizardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final today = DateFormat('MM/dd/yyyy').format(DateTime.now());
+    final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
     inquiryDateController.text = today;
 
     if (Get.arguments != null) {
@@ -176,7 +178,7 @@ class EventWizardController extends GetxController {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      controller.text = DateFormat('MM/dd/yyyy').format(picked);
+      controller.text = DateFormat('dd/MM/yyyy').format(picked);
     }
   }
 
@@ -250,8 +252,8 @@ class EventWizardController extends GetxController {
         eventEndDate: endDateController.text,
         eventEndTime: endTimeController.text,
         budgetAmount: double.tryParse(estimatedBudgetController.text) ?? 0.0,
-        venueId: 0,
-        eventStatus: "INQUIRY",
+        venueId: selectedVenueId.value ?? 0,
+        eventStatus: statusController.text.toUpperCase(),
         remarks: remarksController.text,
         priority: priority.value,
       );
@@ -295,8 +297,8 @@ class EventWizardController extends GetxController {
         eventEndDate: endDateController.text, 
         eventEndTime: endTimeController.text,
         budgetAmount: double.tryParse(estimatedBudgetController.text) ?? 0.0,
-        venueId: 0, 
-        eventStatus: "INQUIRY", 
+        venueId: selectedVenueId.value ?? 0, 
+        eventStatus: statusController.text.toUpperCase(), 
         remarks: remarksController.text,
         priority: priority.value,
         partyId: mainClient?.partyId,
