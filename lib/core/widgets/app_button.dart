@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 import '../constants/app_dimens.dart';
 import '../theme/app_text_styles.dart';
@@ -89,23 +90,30 @@ class AppButton extends StatelessWidget {
   }
 
   Widget _buildContent(Color color) {
+    final textStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      color: color,
+    );
+
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          icon!,
+          const SizedBox(width: 8),
           Text(
             text,
-            style: AppTextStyles.heading.copyWith(color: color),
+            style: textStyle,
           ),
-          const SizedBox(width: 8),
-          icon!,
         ],
       );
     }
 
     return Text(
       text,
-      style: AppTextStyles.heading.copyWith(color: color),
+      style: textStyle,
     );
   }
 }

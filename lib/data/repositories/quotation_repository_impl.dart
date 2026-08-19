@@ -38,15 +38,53 @@ class QuotationRepositoryImpl implements QuotationRepository {
 
   @override
   Future<void> addOrUpdateEstimate(EventEstimateRequestDto payload) async {
-    final formData = payload.toFormData();
+    try {
+      final data = payload.toFormData();
+      final response = await _dioClient.dio.post(
+        ApiEndpoints.eventEstimateAddUpdate,
+        data: data,
+      );
+      
+      if (response.statusCode != 200) {
+        throw Exception('Failed to add or update estimate');
+      }
+    } catch (e) {
+      throw Exception('Failed to add or update estimate: $e');
+    }
+  }
 
-    final response = await _dioClient.dio.post(
-      ApiEndpoints.eventEstimateAddUpdate,
-      data: formData,
-    );
+  @override
+  Future<List<dynamic>> getBankAccounts(Map<String, dynamic> payload) async {
+    try {
+      final response = await _dioClient.dio.post(ApiEndpoints.bankList, data: payload);
+      // Assuming response data holds the list in 'data' -> 'content' or just 'data'
+      if (response.data != null && response.data['data'] != null) {
+        if (response.data['data'] is Map && response.data['data']['content'] != null) {
+          return response.data['data']['content'];
+        } else if (response.data['data'] is List) {
+          return response.data['data'];
+        }
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to save estimate');
+  @override
+  Future<List<dynamic>> getCashAccounts(Map<String, dynamic> payload) async {
+    try {
+      final response = await _dioClient.dio.post(ApiEndpoints.cashAccountList, data: payload);
+      if (response.data != null && response.data['data'] != null) {
+        if (response.data['data'] is Map && response.data['data']['content'] != null) {
+          return response.data['data']['content'];
+        } else if (response.data['data'] is List) {
+          return response.data['data'];
+        }
+      }
+      return [];
+    } catch (e) {
+      return [];
     }
   }
 }

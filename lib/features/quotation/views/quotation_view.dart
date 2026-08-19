@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_dropdown.dart';
-import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_page_container.dart';
+import '../../../../core/widgets/app_text_field.dart';
 import '../controllers/quotation_controller.dart';
 import 'modals/function_summary_modal.dart';
 import 'modals/quotation_update_history_modal.dart';
@@ -197,6 +199,19 @@ class QuotationView extends GetView<QuotationController> {
             ],
           ),
           const SizedBox(height: AppDimens.paddingMd),
+          _buildLabel(AppStrings.estimateType),
+          Obx(() => AppDropdown<String>(
+            hintText: AppStrings.estimateType,
+            value: controller.estimateType.value,
+            items: [
+              DropdownMenuItem(value: 'MAIN', child: Text(AppStrings.main)),
+              DropdownMenuItem(value: 'OTHER', child: Text(AppStrings.other)),
+            ],
+            onChanged: (val) {
+              if (val != null) controller.estimateType.value = val;
+            },
+          )),
+          const SizedBox(height: AppDimens.paddingMd),
           _buildLabel(AppStrings.approval),
           const AppTextField(
             hintText: AppStrings.completed,
@@ -301,14 +316,19 @@ class QuotationView extends GetView<QuotationController> {
                   height: 48,
                 ),
               ),
-              const SizedBox(width: AppDimens.paddingMd),
+              const SizedBox(width: 12),
               Expanded(
                 child: AppButton(
                   text: AppStrings.generateItem,
                   onPressed: () {},
                   borderRadius: AppDimens.radiusMd,
                   height: 48,
-                  icon: const Icon(Icons.auto_awesome, color: AppColors.white, size: 16),
+                  icon: SvgPicture.asset(
+                    'assets/icons/generate-item.svg', 
+                    width: 16, 
+                    height: 16,
+                    colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
+                  ),
                 ),
               ),
             ],
@@ -600,7 +620,7 @@ class QuotationView extends GetView<QuotationController> {
                   color: AppColors.primaryLight,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.calculate_outlined, size: 16, color: AppColors.primary),
+                child: const Icon(Icons.receipt_long_outlined, size: 16, color: AppColors.primary),
               ),
               const SizedBox(width: AppDimens.paddingSm),
               const Text(
@@ -616,47 +636,101 @@ class QuotationView extends GetView<QuotationController> {
             ],
           ),
           const SizedBox(height: AppDimens.paddingLg),
-          _buildSummaryRow(AppStrings.subtotal, '₹ ${AppStrings.sampleSubtotal}', isBold: true),
+          _buildSummaryRowWithColor(AppStrings.subtotal, '₹ 2,92,500', isBold: true, color: const Color(0xFF9F1239)),
+          const SizedBox(height: AppDimens.paddingMd),
+          _buildSummaryInputRow(AppStrings.haldiDecoration, '0', prefix: '₹'),
           const SizedBox(height: AppDimens.paddingSm),
-          _buildSummaryRow(AppStrings.haldiDecoration, '₹ 45,000'),
-          const SizedBox(height: AppDimens.paddingSm),
-          _buildSummaryRow(AppStrings.receptionGala, '₹ 1,20,000'),
+          _buildSummaryInputRow(AppStrings.receptionGala, '0', prefix: '₹'),
           const SizedBox(height: AppDimens.paddingMd),
           Row(
             children: [
-              const Text(AppStrings.discount, style: TextStyle(fontSize: 13, color: AppColors.textPrimary)),
+              const Text(AppStrings.discount, style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
               const Spacer(),
-              Container(
-                width: 60,
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text('% 10', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+              SizedBox(
+                width: 70,
+                child: AppTextField(hintText: '10', prefixIcon: const Padding(padding: EdgeInsets.only(left: 8, right: 4, top: 11), child: Text('%', style: TextStyle(color: AppColors.textSecondary)))),
               ),
               const SizedBox(width: 8),
-              Container(
-                width: 80,
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text('₹ 12,000', textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
+              SizedBox(
+                width: 100,
+                child: AppTextField(hintText: '12500', prefixIcon: const Padding(padding: EdgeInsets.only(left: 8, right: 4, top: 11), child: Text('₹', style: TextStyle(color: AppColors.textSecondary)))),
               ),
             ],
           ),
           const SizedBox(height: AppDimens.paddingMd),
-          _buildSummaryRow(AppStrings.amountAfterDiscount, '₹ ${AppStrings.sampleAmountAfterDiscount}', isBold: true),
+          _buildSummaryRowWithColor(AppStrings.amountAfterDiscount, '₹ 2,80,000', isBold: true, color: const Color(0xFF9F1239)),
           const SizedBox(height: AppDimens.paddingMd),
-          const Divider(height: 1, color: AppColors.border),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel(AppStrings.cashPayment),
+                    AppTextField(
+                      hintText: '',
+                      prefixIcon: const Padding(padding: EdgeInsets.only(left: 8, top: 11), child: Text('₹', style: TextStyle(color: AppColors.textSecondary))),
+                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel(AppStrings.chequeAmount),
+                    AppTextField(
+                      hintText: '',
+                      prefixIcon: const Padding(padding: EdgeInsets.only(left: 8, top: 11), child: Text('₹', style: TextStyle(color: AppColors.textSecondary))),
+                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: AppDimens.paddingMd),
-          _buildSummaryRow('${AppStrings.cgst} 9%', '₹ 24,300'),
+          _buildSummaryTaxRow(AppStrings.cgst, '9', '₹ 25,200'),
           const SizedBox(height: AppDimens.paddingSm),
-          _buildSummaryRow('${AppStrings.sgst} 9%', '₹ 24,300'),
+          _buildSummaryTaxRow(AppStrings.sgst, '9', '₹ 25,200'),
           const SizedBox(height: AppDimens.paddingSm),
-          _buildSummaryRow('${AppStrings.igst} 0%', '₹ 0'),
+          _buildSummaryTaxRow(AppStrings.igst, '0', '₹ 0'),
+          const SizedBox(height: AppDimens.paddingMd),
+          Row(
+            children: [
+              const Text(AppStrings.taxType, style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              const Spacer(),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: const Text(AppStrings.tds, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: const Text(AppStrings.tcs, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimens.paddingSm),
+          _buildSummaryInputRow(AppStrings.tdsAmount, '0', width: 100),
+          const SizedBox(height: AppDimens.paddingSm),
+          _buildSummaryInputRow(AppStrings.roundOff, '0', width: 100),
           const SizedBox(height: AppDimens.paddingMd),
           Container(
             padding: const EdgeInsets.all(AppDimens.paddingMd),
@@ -667,12 +741,12 @@ class QuotationView extends GetView<QuotationController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                Text(AppStrings.chequeAmt, style: TextStyle(fontSize: 12, color: Color(0xFF16A34A))),
-                Text('₹ 0.00', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
+                Text(AppStrings.chequeAmt, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
+                Text('₹ 0.00', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
               ],
             ),
           ),
-          const SizedBox(height: AppDimens.paddingMd),
+          const SizedBox(height: AppDimens.paddingLg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
@@ -685,17 +759,74 @@ class QuotationView extends GetView<QuotationController> {
                 ),
               ),
               Text(
-                '₹ ${AppStrings.sampleGrandTotal}',
+                '₹ 3,30,400.00',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
+                  color: Color(0xFF9F1239),
                 ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSummaryRowWithColor(String label, String value, {bool isBold = false, Color? color}) {
+    final style = TextStyle(
+      fontSize: 14,
+      fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+      color: color ?? (isBold ? AppColors.textPrimary : AppColors.textSecondary),
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: style.copyWith(decoration: label == AppStrings.subtotal ? TextDecoration.underline : null),
+        ),
+        Text(value, style: style),
+      ],
+    );
+  }
+
+  Widget _buildSummaryInputRow(String label, String hint, {String? prefix, double width = 120}) {
+    return Row(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+        const Spacer(),
+        SizedBox(
+          width: width,
+          child: AppTextField(
+            hintText: hint,
+            prefixIcon: prefix != null ? Padding(padding: const EdgeInsets.only(left: 8, right: 4, top: 11), child: Text(prefix, style: const TextStyle(color: AppColors.textSecondary))) : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryTaxRow(String label, String hint, String value) {
+    return Row(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+        const Spacer(),
+        SizedBox(
+          width: 70,
+          child: AppTextField(
+            hintText: hint,
+            suffixIcon: const Padding(padding: EdgeInsets.only(right: 8, left: 4, top: 11), child: Text('%', style: TextStyle(color: AppColors.textSecondary))),
+          ),
+        ),
+        SizedBox(
+          width: 80,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+          ),
+        ),
+      ],
     );
   }
 
@@ -760,80 +891,16 @@ class QuotationView extends GetView<QuotationController> {
           const SizedBox(height: AppDimens.paddingMd),
           AppButton(
             text: AppStrings.addAdvancePayment,
-            onPressed: () {},
+            onPressed: controller.addAdvancePayment,
             borderRadius: AppDimens.radiusMd,
             height: 44,
           ),
           const SizedBox(height: AppDimens.paddingMd),
-          Container(
-            padding: const EdgeInsets.all(AppDimens.paddingMd),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: const [
-                        Icon(Icons.check_circle_outline, size: 16, color: Color(0xFF16A34A)),
-                        SizedBox(width: 6),
-                        Text(
-                          AppStrings.advancePayment1,
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE5E7EB),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text('₹ 50000', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppDimens.paddingMd),
-                _buildLabel(AppStrings.paymentMode),
-                Obx(() => AppDropdown<String>(
-                  hintText: AppStrings.paymentMode,
-                  value: controller.paymentMode.value,
-                  items: [
-                    DropdownMenuItem(value: 'BANK_TRANSFER', child: Text(AppStrings.bankTransfer)),
-                    DropdownMenuItem(value: 'UPI', child: Text(AppStrings.upi)),
-                    DropdownMenuItem(value: 'CASH', child: Text(AppStrings.cash)),
-                    DropdownMenuItem(value: 'CHEQUE', child: Text(AppStrings.cheque)),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) controller.paymentMode.value = val;
-                  },
-                )),
-                const SizedBox(height: AppDimens.paddingMd),
-                _buildLabel(AppStrings.paymentDateTime),
-                const AppTextField(
-                  hintText: AppStrings.samplePaymentDateTime,
-                  suffixIcon: Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: AppDimens.paddingMd),
-                _buildLabel(AppStrings.paymentDescription),
-                const AppTextField(hintText: AppStrings.paymentDescHint),
-                const SizedBox(height: AppDimens.paddingSm),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.delete_outline, size: 14, color: AppColors.error),
-                    label: const Text(AppStrings.remove, style: TextStyle(fontSize: 12, color: AppColors.error)),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Obx(() => Column(
+                children: controller.advancePayments.asMap().entries.map((entry) {
+                  return _buildAdvancePaymentItem(entry.key, entry.value);
+                }).toList(),
+              )),
           const SizedBox(height: AppDimens.paddingMd),
           Container(
             padding: const EdgeInsets.all(AppDimens.paddingMd),
@@ -862,6 +929,155 @@ class QuotationView extends GetView<QuotationController> {
                 Text(AppStrings.remainingPayment, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
                 Text(AppStrings.sampleRemainingPayment, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdvancePaymentItem(int index, AdvancePaymentItem item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppDimens.paddingMd),
+      padding: const EdgeInsets.all(AppDimens.paddingMd),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFF16A34A)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Advance Payment #${index + 1}',
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  ),
+                ],
+              ),
+              Obx(() => item.amount.value.isNotEmpty
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE5E7EB),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text('₹ ${item.amount.value}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    )
+                  : const SizedBox.shrink()),
+            ],
+          ),
+          const SizedBox(height: AppDimens.paddingMd),
+          _buildLabel(AppStrings.amount),
+          AppTextField(
+            hintText: 'Enter amount',
+            onChanged: (val) => item.amount.value = val,
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: AppDimens.paddingMd),
+          _buildLabel(AppStrings.paymentMode),
+          Obx(() => AppDropdown<String>(
+                hintText: AppStrings.paymentMode,
+                value: item.paymentMode.value,
+                items: [
+                  DropdownMenuItem(value: 'BANK_TRANSFER', child: Text(AppStrings.bankTransfer)),
+                  DropdownMenuItem(value: 'UPI', child: Text(AppStrings.upi)),
+                  DropdownMenuItem(value: 'CASH', child: Text(AppStrings.cash)),
+                  DropdownMenuItem(value: 'CHEQUE', child: Text(AppStrings.cheque)),
+                ],
+                onChanged: (val) {
+                  if (val != null) item.paymentMode.value = val;
+                },
+              )),
+          const SizedBox(height: AppDimens.paddingMd),
+          Obx(() {
+            if (item.paymentMode.value == 'CASH') {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLabel(AppStrings.cashAccount),
+                  AppDropdown<int>(
+                    hintText: 'Select Cash Account',
+                    value: item.cashAccountId.value,
+                    items: [
+                      const DropdownMenuItem(value: -1, child: Text('Select...')),
+                      ...controller.cashAccounts.map((account) {
+                        return DropdownMenuItem<int>(
+                          value: account['id'] ?? -1,
+                          child: Text(account['name'] ?? 'Unknown'),
+                        );
+                      }),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) item.cashAccountId.value = val;
+                    },
+                  ),
+                  const SizedBox(height: AppDimens.paddingMd),
+                ],
+              );
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLabel(AppStrings.bankAccount),
+                  AppDropdown<int>(
+                    hintText: 'Select Bank Account',
+                    value: item.bankId.value,
+                    items: [
+                      const DropdownMenuItem(value: -1, child: Text('Select...')),
+                      ...controller.bankAccounts.map((account) {
+                        return DropdownMenuItem<int>(
+                          value: account['id'] ?? -1,
+                          child: Text(account['name'] ?? 'Unknown'),
+                        );
+                      }),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) item.bankId.value = val;
+                    },
+                  ),
+                  const SizedBox(height: AppDimens.paddingMd),
+                ],
+              );
+            }
+          }),
+          _buildLabel(AppStrings.paymentDate),
+          Obx(() => AppTextField(
+                hintText: AppStrings.samplePaymentDate,
+                controller: TextEditingController(text: item.paymentDate.value),
+                readOnly: true,
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: Get.context!,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2101),
+                  );
+                  if (picked != null) {
+                    item.paymentDate.value = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+                  }
+                },
+                suffixIcon: const Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textSecondary),
+              )),
+          const SizedBox(height: AppDimens.paddingMd),
+          _buildLabel(AppStrings.paymentDescription),
+          AppTextField(
+            hintText: AppStrings.paymentDescHint,
+            onChanged: (val) => item.description.value = val,
+          ),
+          const SizedBox(height: AppDimens.paddingSm),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () => controller.removeAdvancePayment(index),
+              icon: const Icon(Icons.delete_outline, size: 14, color: AppColors.error),
+              label: const Text(AppStrings.remove, style: TextStyle(fontSize: 12, color: AppColors.error)),
             ),
           ),
         ],

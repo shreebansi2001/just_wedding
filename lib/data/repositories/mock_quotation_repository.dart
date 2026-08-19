@@ -32,4 +32,16 @@ class MockQuotationRepository implements QuotationRepository {
   Future<void> addOrUpdateEstimate(EventEstimateRequestDto payload) async {
     await Future.delayed(const Duration(milliseconds: 500));
   }
+
+  @override
+  Future<List<dynamic>> getBankAccounts(Map<String, dynamic> payload) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
+  }
+
+  @override
+  Future<List<dynamic>> getCashAccounts(Map<String, dynamic> payload) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
+  }
 }

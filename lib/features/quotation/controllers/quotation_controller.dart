@@ -3,6 +3,15 @@ import '../../../domain/models/quotation_model.dart';
 import '../../../domain/models/event_estimate_dtos.dart';
 import '../../../domain/repositories/quotation_repository.dart';
 
+class AdvancePaymentItem {
+  final amount = ''.obs;
+  final paymentMode = 'BANK_TRANSFER'.obs;
+  final cashAccountId = (-1).obs;
+  final bankId = (-1).obs;
+  final paymentDate = ''.obs;
+  final description = ''.obs;
+}
+
 class QuotationController extends GetxController {
   final QuotationRepository _repository = Get.find<QuotationRepository>();
 
@@ -15,10 +24,58 @@ class QuotationController extends GetxController {
   final isLoading = true.obs;
   final isSaving = false.obs;
 
+  final advancePayments = <AdvancePaymentItem>[].obs;
+  final bankAccounts = <dynamic>[].obs;
+  final cashAccounts = <dynamic>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchQuotationItems();
+    fetchBankAccounts();
+    fetchCashAccounts();
+  }
+
+  void addAdvancePayment() {
+    advancePayments.add(AdvancePaymentItem());
+  }
+
+  void removeAdvancePayment(int index) {
+    advancePayments.removeAt(index);
+  }
+
+  Future<void> fetchBankAccounts() async {
+    try {
+      final payload = {
+        "isPrimary": true,
+        "page": 0,
+        "search": "",
+        "size": 100,
+        "sortBy": "",
+        "sortDirection": "",
+        "userId": 0
+      };
+      bankAccounts.value = await _repository.getBankAccounts(payload);
+    } catch (e) {
+      print('Error fetching bank accounts: $e');
+    }
+  }
+
+  Future<void> fetchCashAccounts() async {
+    try {
+      final payload = {
+        "isPrimary": true,
+        "page": 0,
+        "search": "",
+        "size": 100,
+        "sortBy": "",
+        "sortDirection": "",
+        "userId": 0
+      };
+      cashAccounts.value = await _repository.getCashAccounts(payload);
+    } catch (e) {
+      print('Error fetching cash accounts: $e');
+    }
   }
 
   Future<void> fetchQuotationItems() async {
@@ -36,26 +93,32 @@ class QuotationController extends GetxController {
     try {
       isSaving.value = true;
       
-      // Dummy payload constructed from observable fields
-      // Later, this should be mapped from all the actual form inputs once they are implemented in the UI
       final payload = EventEstimateRequestDto(
         estimateDate: estimateDate.value,
-        estimateType: 'MAIN', // Will need a field for this in UI
-        eventId: 1, // Currently mocked, needs route argument or selection
-        notes: '', // Notes field should be bound to a controller
+        estimateType: estimateType.value,
+        eventId: -1,
+        notes: '',
         statusType: 'PENDING',
-        functions: [], // Need mapping for items under specific functions
-        payments: [], // Need payment inputs mapping
-        cashAmount: 0,
+        functions: [],
+        payments: advancePayments.map((p) => EventEstimatePaymentRequestDto(
+          amount: double.tryParse(p.amount.value) ?? 0.0,
+          bankId: p.bankId.value,
+          cashAccountId: p.cashAccountId.value,
+          description: p.description.value,
+          id: 0,
+          mode: p.paymentMode.value,
+          paymentDate: p.paymentDate.value,
+        )).toList(),
+        cashAmount: double.tryParse(cashPaymentAmount.value.replaceAll(',', '')) ?? 0.0,
         cgst: cgstPercent.value.toDouble(),
-        chequeAmount: 0,
+        chequeAmount: double.tryParse(chequePaymentAmount.value.replaceAll(',', '')) ?? 0.0,
         discount: discountPercent.value.toDouble(),
-        discountAmount: double.tryParse(discountAmount.value.replaceAll(',', '')),
+        discountAmount: double.tryParse(discountAmount.value.replaceAll(',', '')) ?? 0.0,
         igst: igstPercent.value.toDouble(),
         sgst: sgstPercent.value.toDouble(),
-        roundOff: 0,
+        roundOff: double.tryParse(roundOffAmount.value.replaceAll(',', '')) ?? 0.0,
         taxAmount: 0,
-        userId: 1, // Should come from AuthService
+        userId: 1,
       );
 
       await _repository.addOrUpdateEstimate(payload);
@@ -72,15 +135,21 @@ class QuotationController extends GetxController {
   final partyName = ''.obs;
   final venue = ''.obs;
   final estimateDate = '10/25/2024'.obs;
+  final estimateType = 'MAIN'.obs; // MAIN or OTHER
   final approvalStatus = 'Completed'.obs;
   final functionName = 'Reception'.obs;
 
   final discountPercent = 10.obs;
-  final discountAmount = '12,000'.obs;
+  final discountAmount = '12500'.obs;
   final cgstPercent = 9.obs;
   final sgstPercent = 9.obs;
   final igstPercent = 0.obs;
-  final taxType = 'PAN'.obs; // PAN or TDS
+  final taxType = 'TDS'.obs; // TDS or TCS
+  
+  final tdsAmount = '0'.obs;
+  final roundOffAmount = '0'.obs;
+  final cashPaymentAmount = '0'.obs;
+  final chequePaymentAmount = '0'.obs;
 
   final paymentMode = 'BANK_TRANSFER'.obs;
 

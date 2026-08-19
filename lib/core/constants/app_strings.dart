@@ -282,6 +282,9 @@ class AppStrings {
   static const String venueLocationHint = 'Location Name';
   static const String estimateDate = 'Estimate Date';
   static const String sampleEstimateDate = '10/25/2024';
+  static const String estimateType = 'Estimate Type';
+  static const String main = 'Main';
+  static const String other = 'Other';
   static const String approval = 'Approval';
   static const String completed = 'Completed';
   static const String functionName = 'Function Name';
@@ -312,8 +315,11 @@ class AppStrings {
   static const String taxType = 'Tax Type';
   static const String pan = 'PAN';
   static const String tds = 'TDS';
+  static const String tcs = 'TCS';
   static const String tdsAmount = 'TDS Amount';
   static const String roundOff = 'Round Off';
+  static const String cashPayment = 'Cash Payment';
+  static const String chequeAmount = 'Cheque Amount';
   static const String chequeAmt = 'Cheque Amt (Incl. GST)';
   static const String grandTotal = 'Grand Total';
   static const String sampleGrandTotal = '3,30,400.00';
@@ -325,8 +331,11 @@ class AppStrings {
   static const String upi = 'UPI';
   static const String cash = 'Cash';
   static const String cheque = 'Cheque';
-  static const String paymentDateTime = 'Payment Date & Time';
-  static const String samplePaymentDateTime = '10/25/2024 10:45 AM';
+  static const String paymentDate = 'Payment Date';
+  static const String samplePaymentDate = '10/25/2024';
+  static const String amount = 'Amount';
+  static const String cashAccount = 'Cash Account';
+  static const String bankAccount = 'Bank Account';
   static const String paymentDescription = 'Payment Description';
   static const String paymentDescHint = 'Initial payment description';
   static const String remove = 'Remove';
