@@ -3,6 +3,7 @@ import 'package:get/get.dart' as getx;
 
 import '../routes/app_routes.dart';
 import '../services/auth_service.dart';
+import '../utils/logger.dart';
 
 class DioClient {
   late final Dio _dio;
@@ -22,26 +23,42 @@ class DioClient {
     );
 
     _dio.interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
-
-    _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
           final authService = getx.Get.find<AuthService>();
           if (authService.isAuthenticated) {
             options.headers['Authorization'] = 'Bearer ${authService.token}';
           }
+
+          dynamic payloadData = options.data;
+          if (payloadData is FormData) {
+            final fields = payloadData.fields.map((f) => '${f.key}: ${f.value}').toList();
+            final files = payloadData.files.map((f) => '${f.key}: [File]').toList();
+            payloadData = {'fields': fields, 'files': files};
+          }
+
+          AppLogger.i(
+            '🚀 REQUEST [${options.method}] => URL: ${options.uri}\n'
+            'Headers: ${options.headers}\n'
+            'Payload: $payloadData',
+          );
+
           return handler.next(options);
         },
+        onResponse: (response, handler) {
+          AppLogger.i(
+            '✅ RESPONSE [${response.statusCode}] => URL: ${response.requestOptions.uri}\n'
+            'Data: ${response.data}',
+          );
+          return handler.next(response);
+        },
         onError: (DioException e, handler) {
+          AppLogger.e(
+            '❌ ERROR [${e.response?.statusCode}] => URL: ${e.requestOptions.uri}\n'
+            'Message: ${e.message}\n'
+            'Response Data: ${e.response?.data}',
+          );
+
           final isAuthEndpoint = e.requestOptions.path.contains('/v1/api/auth/');
           
           if (e.response?.statusCode == 401 && !isAuthEndpoint) {
