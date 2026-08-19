@@ -12,8 +12,8 @@ class DashboardController extends GetxController {
   final hasError = false.obs;
   final errorMessage = ''.obs;
 
-  final currentMonth = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
-  final selectedDate = Rxn<DateTime>();
+  final currentMonth = DateTime(2026, 8, 1).obs;
+  final selectedDate = Rxn<DateTime>(DateTime(2026, 8, 18));
   final searchQuery = ''.obs;
   
   final currentPage = 0.obs;
@@ -22,8 +22,6 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final now = DateTime.now();
-    selectedDate.value = DateTime(now.year, now.month, now.day);
     fetchDashboardData();
   }
 

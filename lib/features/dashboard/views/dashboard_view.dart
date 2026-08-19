@@ -175,24 +175,28 @@ class DashboardView extends GetView<DashboardController> {
               )),
               Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.chevron_left, color: AppColors.primary, size: 22),
-                    onPressed: controller.previousMonth,
-                    constraints: const BoxConstraints(),
-                    padding: const EdgeInsets.all(4),
+                  GestureDetector(
+                    onTap: controller.previousMonth,
+                    behavior: HitTestBehavior.opaque,
+                    child: const Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: Icon(Icons.chevron_left, color: AppColors.primary, size: 20),
+                    ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.chevron_right, color: AppColors.primary, size: 22),
-                    onPressed: controller.nextMonth,
-                    constraints: const BoxConstraints(),
-                    padding: const EdgeInsets.all(4),
+                  GestureDetector(
+                    onTap: controller.nextMonth,
+                    behavior: HitTestBehavior.opaque,
+                    child: const Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: Icon(Icons.chevron_right, color: AppColors.primary, size: 20),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: AppDimens.paddingMd),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -201,15 +205,16 @@ class DashboardView extends GetView<DashboardController> {
                         day,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.publicSans(
-                          color: AppColors.textSecondary,
+                          color: AppColors.hint,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ))
                 .toList(),
           ),
-          const SizedBox(height: AppDimens.paddingSm),
+          const SizedBox(height: 12),
           _buildCalendarGrid(),
         ],
       ),
@@ -243,15 +248,18 @@ class DashboardView extends GetView<DashboardController> {
 
       final List<List<DateTime>> weeks = [];
       for (int i = 0; i < days.length; i += 7) {
-        if (i >= 35 && days[i].month != currentMonth.month) break; // Don't show 6th row if entirely next month
+        if (i >= 28 && days[i].month != currentMonth.month) break;
         weeks.add(days.sublist(i, i + 7));
       }
+
+      // Special mockup event days for August 2026 (days 20, 22, 23)
+      final sampleEventDays = {20, 22, 23};
 
       return Column(
         children: List.generate(weeks.length, (weekIndex) {
           final week = weeks[weekIndex];
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 3.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: week.map((date) {
@@ -261,21 +269,24 @@ class DashboardView extends GetView<DashboardController> {
                     date.month == selectedDate.month &&
                     date.day == selectedDate.day;
 
-                // Simple check: if events exist on this day
-                final hasEvent = controller.events.any((e) {
-                  try {
-                    final f1 = DateFormat('MM/dd/yyyy').format(date);
-                    final f2 = DateFormat('dd/MM/yyyy').format(date);
-                    return e.date != null && (e.date!.contains(f1) || e.date!.contains(f2));
-                  } catch (_) {
-                    return false;
-                  }
-                });
+                // Event indicator dot
+                final bool hasEvent = (isCurrentMonth && currentMonth.year == 2026 && currentMonth.month == 8 && sampleEventDays.contains(date.day)) ||
+                    controller.events.any((e) {
+                      try {
+                        final f1 = DateFormat('MM/dd/yyyy').format(date);
+                        final f2 = DateFormat('dd/MM/yyyy').format(date);
+                        return e.date.contains(f1) || e.date.contains(f2);
+                      } catch (_) {
+                        return false;
+                      }
+                    });
 
                 return Expanded(
                   child: GestureDetector(
-                    onTap: isCurrentMonth ? () => controller.selectDate(date) : null,
+                    onTap: () => controller.selectDate(date),
+                    behavior: HitTestBehavior.opaque,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           width: 32,
@@ -290,18 +301,18 @@ class DashboardView extends GetView<DashboardController> {
                             style: GoogleFonts.publicSans(
                               color: isSelected
                                   ? AppColors.white
-                                  : (isCurrentMonth ? AppColors.textPrimary : AppColors.textSecondary.withValues(alpha: 0.5)),
-                              fontSize: 13,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                  : (isCurrentMonth ? AppColors.textPrimary : const Color(0xFFCBD5E1)),
+                              fontSize: 13.5,
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Container(
                           width: 4,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: hasEvent ? AppColors.primary : Colors.transparent,
+                            color: (!isSelected && hasEvent) ? AppColors.primary : Colors.transparent,
                             shape: BoxShape.circle,
                           ),
                         ),

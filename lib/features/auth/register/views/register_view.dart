@@ -110,7 +110,7 @@ class RegisterView extends GetView<RegisterController> {
                                     borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                                   ),
                                 ),
-                                value: controller.selectedStateId.value,
+                                initialValue: controller.selectedStateId.value,
                                 items: controller.states.map((state) {
                                   return DropdownMenuItem<int>(
                                     value: state.id,
@@ -154,7 +154,7 @@ class RegisterView extends GetView<RegisterController> {
                                     borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                                   ),
                                 ),
-                                value: controller.selectedCityId.value,
+                                initialValue: controller.selectedCityId.value,
                                 items: controller.cities.map((city) {
                                   return DropdownMenuItem<int>(
                                     value: city.id,
