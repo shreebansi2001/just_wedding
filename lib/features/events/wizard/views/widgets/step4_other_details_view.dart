@@ -31,11 +31,33 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildPersonInfoCard(
+                  context: context,
                   title: AppStrings.groomsInformation,
+                  nameController: controller.groomNameController,
+                  fatherNameController: controller.groomFatherNameController,
+                  contactNumberController:
+                      controller.groomContactNumberController,
+                  instaIdController: controller.groomInstaIdController,
+                  birthdateController: controller.groomBirthdateController,
+                  photographerNameController:
+                      controller.groomPhotographerNameController,
+                  photographerContactController:
+                      controller.groomPhotographerContactController,
                 ),
                 const SizedBox(height: AppDimens.paddingLg),
                 _buildPersonInfoCard(
+                  context: context,
                   title: AppStrings.bridesInformation,
+                  nameController: controller.brideNameController,
+                  fatherNameController: controller.brideFatherNameController,
+                  contactNumberController:
+                      controller.brideContactNumberController,
+                  instaIdController: controller.brideInstaIdController,
+                  birthdateController: controller.brideBirthdateController,
+                  photographerNameController:
+                      controller.bridePhotographerNameController,
+                  photographerContactController:
+                      controller.bridePhotographerContactController,
                 ),
               ],
             );
@@ -69,7 +91,9 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                   duration: const Duration(milliseconds: 200),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isGroomBride ? AppColors.primary : Colors.transparent,
+                    color: isGroomBride
+                        ? AppColors.primary
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: isGroomBride
                         ? [
@@ -84,7 +108,9 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                   child: Text(
                     AppStrings.groomBride,
                     style: GoogleFonts.publicSans(
-                      color: isGroomBride ? AppColors.white : AppColors.textPrimary,
+                      color: isGroomBride
+                          ? AppColors.white
+                          : AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),
@@ -99,7 +125,9 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                   duration: const Duration(milliseconds: 200),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: !isGroomBride ? AppColors.primary : Colors.transparent,
+                    color: !isGroomBride
+                        ? AppColors.primary
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: !isGroomBride
                         ? [
@@ -114,7 +142,9 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
                   child: Text(
                     AppStrings.otherReference,
                     style: GoogleFonts.publicSans(
-                      color: !isGroomBride ? AppColors.white : AppColors.textPrimary,
+                      color: !isGroomBride
+                          ? AppColors.white
+                          : AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),
@@ -128,7 +158,17 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
     });
   }
 
-  Widget _buildPersonInfoCard({required String title}) {
+  Widget _buildPersonInfoCard({
+    required BuildContext context,
+    required String title,
+    required TextEditingController nameController,
+    required TextEditingController fatherNameController,
+    required TextEditingController contactNumberController,
+    required TextEditingController instaIdController,
+    required TextEditingController birthdateController,
+    required TextEditingController photographerNameController,
+    required TextEditingController photographerContactController,
+  }) {
     return Container(
       padding: const EdgeInsets.all(AppDimens.paddingMd),
       decoration: BoxDecoration(
@@ -169,31 +209,53 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.name),
-          const AppTextField(hintText: AppStrings.enterFullName),
+          AppTextField(
+            controller: nameController,
+            hintText: AppStrings.enterFullName,
+          ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.fathersName),
-          const AppTextField(hintText: AppStrings.enterFathersName),
+          AppTextField(
+            controller: fatherNameController,
+            hintText: AppStrings.enterFathersName,
+          ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.contactNumber),
-          const AppTextField(
+          AppTextField(
+            controller: contactNumberController,
             hintText: '+1 (555) 000-0000',
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.instaId),
           AppTextField(
+            controller: instaIdController,
             hintText: 'username',
             prefixIcon: Container(
               alignment: Alignment.center,
               width: 36,
-              child: const Icon(Icons.alternate_email, size: 16, color: AppColors.hint),
+              child: const Icon(
+                Icons.alternate_email,
+                size: 16,
+                color: AppColors.hint,
+              ),
             ),
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.birthdate),
-          const AppTextField(
-            hintText: 'mm/dd/yyyy',
-            suffixIcon: Icon(
+          AppTextField(
+            controller: birthdateController,
+            hintText: 'dd/mm/yyyy',
+            readOnly: true,
+            onTap: () => controller.selectDate(
+              context,
+              birthdateController,
+              initialDate: DateTime.now().subtract(
+                const Duration(days: 365 * 20),
+              ),
+              lastDate: DateTime.now(),
+            ),
+            suffixIcon: const Icon(
               Icons.calendar_today_outlined,
               size: 18,
               color: AppColors.hint,
@@ -201,10 +263,14 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.photographerName),
-          const AppTextField(hintText: 'Name of studio or person'),
+          AppTextField(
+            controller: photographerNameController,
+            hintText: 'Name of studio or person',
+          ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.contactNumber),
-          const AppTextField(
+          AppTextField(
+            controller: photographerContactController,
             hintText: '+1 (555) 000-0000',
             keyboardType: TextInputType.phone,
           ),
@@ -241,10 +307,14 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
           ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.photographerName),
-          const AppTextField(hintText: 'Name of studio or person'),
+          AppTextField(
+            controller: controller.referencePhotographerNameController,
+            hintText: 'Name of studio or person',
+          ),
           const SizedBox(height: AppDimens.paddingMd),
           _buildFieldLabel(AppStrings.contactNumber),
-          const AppTextField(
+          AppTextField(
+            controller: controller.referencePhotographerContactController,
             hintText: '+1 (555) 000-0000',
             keyboardType: TextInputType.phone,
           ),
@@ -286,17 +356,18 @@ class Step4OtherDetailsView extends GetView<EventWizardController> {
         const SizedBox(width: AppDimens.paddingMd),
         Expanded(
           flex: 1,
-          child: Obx(() => AppButton(
-            text: AppStrings.complete,
-            onPressed: controller.completeWizard,
-            isLoading: controller.isLoading.value,
-            borderRadius: AppDimens.radiusMd,
-            height: 48,
-            hasShadow: true,
-          )),
+          child: Obx(
+            () => AppButton(
+              text: AppStrings.complete,
+              onPressed: controller.completeWizard,
+              isLoading: controller.isLoading.value,
+              borderRadius: AppDimens.radiusMd,
+              height: 48,
+              hasShadow: true,
+            ),
+          ),
         ),
       ],
     );
   }
 }
-

@@ -1,16 +1,23 @@
 import '../../core/network/api_endpoints.dart';
 import '../../core/network/dio_client.dart';
+import '../../core/services/auth_service.dart';
 import '../../domain/models/event_model.dart';
 import '../../domain/models/event_dtos.dart';
 import '../../domain/repositories/event_repository.dart';
 
 class EventRepositoryImpl implements EventRepository {
   final DioClient _dioClient;
+  final AuthService _authService;
 
-  EventRepositoryImpl(this._dioClient);
+  EventRepositoryImpl(this._dioClient, this._authService);
 
   @override
-  Future<List<EventModel>> getEventsFiltered({String? search, String? toDate, int page = 0, int size = 10}) async {
+  Future<List<EventModel>> getEventsFiltered({
+    String? search,
+    String? toDate,
+    int page = 0,
+    int size = 10,
+  }) async {
     final response = await _dioClient.dio.post(
       ApiEndpoints.eventList, // Assuming this exists or I need to add it
       data: {
@@ -25,14 +32,14 @@ class EventRepositoryImpl implements EventRepository {
         "sortBy": "id",
         "sortDirection": "DESC",
         "toDate": toDate,
-        "userId": 13, // hardcoded as seen in payload screenshot for now
-        "venueId": null
+        "userId": _authService.userId,
+        "venueId": null,
       },
     );
-    
+
     final content = response.data['data']['content'] as List?;
     if (content == null) return [];
-    
+
     return content.map((e) => EventModel.fromJson(e)).toList();
   }
 
@@ -58,7 +65,10 @@ class EventRepositoryImpl implements EventRepository {
 
   // Phase 2 specific methods
   @override
-  Future<List<EventTypeMasterRequestDto>> getEventTypes({String search = "", int size = 100}) async {
+  Future<List<EventTypeMasterRequestDto>> getEventTypes({
+    String search = "",
+    int size = 100,
+  }) async {
     final response = await _dioClient.dio.post(
       ApiEndpoints.eventTypeList,
       data: {
@@ -66,7 +76,7 @@ class EventRepositoryImpl implements EventRepository {
         "page": 0,
         "size": size,
         "sortBy": "id",
-        "sortDirection": "DESC"
+        "sortDirection": "DESC",
       },
     );
     final data = response.data['data']['content'] as List?;
@@ -76,9 +86,13 @@ class EventRepositoryImpl implements EventRepository {
 
   @override
   Future<Map<String, dynamic>> saveEvent(EventRequestDto request) async {
+    // The backend 500s if userId is missing from add-update, regardless of
+    // what the caller's DTO carries - always stamp the logged-in user here.
+    final payload = request.toJson();
+    payload['userId'] = _authService.userId;
     final response = await _dioClient.dio.post(
       ApiEndpoints.eventAddUpdate,
-      data: request.toJson(),
+      data: payload,
     );
     return response.data;
   }
@@ -92,7 +106,7 @@ class EventRepositoryImpl implements EventRepository {
         "size": 100,
         "search": "",
         "sortBy": "id",
-        "sortDirection": "DESC"
+        "sortDirection": "DESC",
       },
     );
     final data = response.data['data']['content'] as List?;
@@ -109,12 +123,14 @@ class EventRepositoryImpl implements EventRepository {
         "page": 0,
         "size": 100,
         "sortBy": "nameEnglish",
-        "sortDirection": "asc"
+        "sortDirection": "asc",
+        "userId": _authService.userId,
       },
     );
-    final data = response.data['data'] as List?;
-    if (data == null) return [];
-    return data.map((e) => FunctionResponseDto.fromJson(e)).toList();
+    final data = response.data['data'];
+    final list = data is Map ? data['content'] as List? : data as List?;
+    if (list == null) return [];
+    return list.map((e) => FunctionResponseDto.fromJson(e)).toList();
   }
 
   @override
@@ -126,7 +142,10 @@ class EventRepositoryImpl implements EventRepository {
   }
 
   @override
-  Future<List<PartyResponseDto>> getParties(int categoryTypeId, {String search = ""}) async {
+  Future<List<PartyResponseDto>> getParties(
+    int categoryTypeId, {
+    String search = "",
+  }) async {
     final response = await _dioClient.dio.post(
       ApiEndpoints.partyList,
       data: {
@@ -137,6 +156,7 @@ class EventRepositoryImpl implements EventRepository {
         "size": 100,
         "sortBy": "id",
         "sortDirection": "DESC",
+        "userId": _authService.userId,
       },
     );
     final data = response.data['data']['content'] as List?;

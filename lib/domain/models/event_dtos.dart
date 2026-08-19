@@ -55,64 +55,130 @@ class EventRequestDto {
     this.eventFunctions,
   });
 
+  // Mirrors the web app's buildEventPayload.js: every key is always present
+  // (null/empty defaults instead of omission) because the backend appears to
+  // dereference nested objects like eventOtherInfo/eventFunctions unconditionally.
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{
-      if (title != null) 'title': title,
+    return <String, dynamic>{
+      'id': id > 0 ? id : null,
+      'userId': userId > 0 ? userId : null,
+      'title': title ?? 'MR',
       'projectName': projectName,
       'eventTypeId': eventTypeId,
-      if (inquiryDate.isNotEmpty) 'inquiryDate': inquiryDate,
-      if (eventStartDate.isNotEmpty) 'eventStartDate': eventStartDate,
-      if (eventStartTime.isNotEmpty) 'eventStartTime': eventStartTime,
-      if (eventEndDate.isNotEmpty) 'eventEndDate': eventEndDate,
-      if (eventEndTime.isNotEmpty) 'eventEndTime': eventEndTime,
-      'budgetAmount': budgetAmount,
-      if (venueId > 0) 'venueId': venueId,
-      if (priority != null) 'priority': priority,
+      'priority': priority ?? 'HIGH',
+      'venueId': venueId > 0 ? venueId : null,
+      'inquiryDate': inquiryDate,
       'eventStatus': eventStatus,
-      if (remarks.isNotEmpty) 'remarks': remarks,
-      if (id > 0) 'id': id,
-      if (userId > 0) 'userId': userId,
-      if (partyId != null && partyId! > 0) 'partyId': partyId,
-      if (eventOtherInfo != null) 'eventOtherInfo': eventOtherInfo!.toJson(),
-      if (eventFunctions != null) 'eventFunctions': eventFunctions!.map((e) => e.toJson()).toList(),
+      'eventStartDate': eventStartDate,
+      'eventStartTime': eventStartTime,
+      'eventEndDate': eventEndDate,
+      'eventEndTime': eventEndTime,
+      'budgetAmount': budgetAmount,
+      'remarks': remarks,
+      'partyId': partyId != null && partyId! > 0 ? partyId : null,
+      'eventFunctions': (eventFunctions ?? const <EventFunctionRequestDto>[])
+          .map((e) => e.toJson())
+          .toList(),
+      'eventOtherInfo': (eventOtherInfo ?? EventOtherInfoRequestDto()).toJson(),
     };
-    return map;
   }
 }
 
 class EventOtherInfoRequestDto {
+  final int? id;
   final String? groomName;
-  final String? brideName;
+  final String? groomFatherName;
   final String? groomContactNumber;
+  final String? groomInstaId;
+  final String? groomBirthdate;
+  final String? groomPhotographerName;
+  final String? groomPhotographerContactNumber;
+  final String? brideName;
+  final String? brideFatherName;
   final String? brideContactNumber;
+  final String? brideInstaId;
+  final String? brideBirthdate;
+  final String? bridePhotographerName;
+  final String? bridePhotographerContactNumber;
+  final String? photographerDetailType; // GROOM_BRIDE, OTHER_REFERENCE
 
   EventOtherInfoRequestDto({
+    this.id,
     this.groomName,
-    this.brideName,
+    this.groomFatherName,
     this.groomContactNumber,
+    this.groomInstaId,
+    this.groomBirthdate,
+    this.groomPhotographerName,
+    this.groomPhotographerContactNumber,
+    this.brideName,
+    this.brideFatherName,
     this.brideContactNumber,
+    this.brideInstaId,
+    this.brideBirthdate,
+    this.bridePhotographerName,
+    this.bridePhotographerContactNumber,
+    this.photographerDetailType,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      if (groomName != null) 'groomName': groomName,
-      if (brideName != null) 'brideName': brideName,
-      if (groomContactNumber != null) 'groomContactNumber': groomContactNumber,
-      if (brideContactNumber != null) 'brideContactNumber': brideContactNumber,
+      'id': id != null && id! > 0 ? id : null,
+      'photographerDetailType': photographerDetailType ?? 'GROOM_BRIDE',
+      'groomName': groomName ?? '',
+      'groomFatherName': groomFatherName ?? '',
+      'groomContactNumber': groomContactNumber ?? '',
+      'groomInstaId': groomInstaId ?? '',
+      'groomBirthdate': groomBirthdate ?? '',
+      'groomPhotographerName': groomPhotographerName ?? '',
+      'groomPhotographerContactNumber': groomPhotographerContactNumber ?? '',
+      'brideName': brideName ?? '',
+      'brideFatherName': brideFatherName ?? '',
+      'brideContactNumber': brideContactNumber ?? '',
+      'brideInstaId': brideInstaId ?? '',
+      'brideBirthdate': brideBirthdate ?? '',
+      'bridePhotographerName': bridePhotographerName ?? '',
+      'bridePhotographerContactNumber': bridePhotographerContactNumber ?? '',
     };
+  }
+}
+
+class SubVenueResponseDto {
+  final int id;
+  final String? nameEnglish;
+
+  SubVenueResponseDto({required this.id, this.nameEnglish});
+
+  factory SubVenueResponseDto.fromJson(Map<String, dynamic> json) {
+    return SubVenueResponseDto(
+      id: json['id'] ?? 0,
+      nameEnglish: json['nameEnglish'],
+    );
   }
 }
 
 class VenueResponseDto {
   final int id;
   final String? nameEnglish;
+  final List<SubVenueResponseDto> subVenues;
 
-  VenueResponseDto({required this.id, this.nameEnglish});
+  VenueResponseDto({
+    required this.id,
+    this.nameEnglish,
+    this.subVenues = const [],
+  });
 
   factory VenueResponseDto.fromJson(Map<String, dynamic> json) {
+    final subVenuesJson = json['subVenues'] as List?;
     return VenueResponseDto(
       id: json['id'] ?? 0,
       nameEnglish: json['nameEnglish'],
+      subVenues:
+          subVenuesJson
+              ?.whereType<Map<String, dynamic>>()
+              .map(SubVenueResponseDto.fromJson)
+              .toList() ??
+          const [],
     );
   }
 }
@@ -120,13 +186,15 @@ class VenueResponseDto {
 class FunctionResponseDto {
   final int id;
   final String? nameEnglish;
+  final String? timeFrom;
 
-  FunctionResponseDto({required this.id, this.nameEnglish});
+  FunctionResponseDto({required this.id, this.nameEnglish, this.timeFrom});
 
   factory FunctionResponseDto.fromJson(Map<String, dynamic> json) {
     return FunctionResponseDto(
       id: json['id'] ?? 0,
       nameEnglish: json['nameEnglish'],
+      timeFrom: json['timeFrom'],
     );
   }
 }
@@ -163,14 +231,16 @@ class EventFunctionRequestDto {
 class EventFunctionVenueRequestDto {
   final int id;
   final int venueId;
+  final List<int> subVenueId;
 
-  EventFunctionVenueRequestDto({this.id = 0, required this.venueId});
+  EventFunctionVenueRequestDto({
+    this.id = 0,
+    required this.venueId,
+    this.subVenueId = const [],
+  });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'venueId': venueId,
-    };
+    return {'id': id, 'venueId': venueId, 'subVenueId': subVenueId};
   }
 }
 

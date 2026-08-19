@@ -18,7 +18,6 @@ class CreateEventController extends GetxController {
   // Data Lists
   final eventTypes = <EventTypeMasterRequestDto>[].obs;
   final isLoadingTypes = true.obs;
-  final isCreating = false.obs;
 
   Timer? _debounce;
 
@@ -31,9 +30,14 @@ class CreateEventController extends GetxController {
   Future<void> _fetchEventTypes({String search = ""}) async {
     try {
       isLoadingTypes.value = true;
-      final types = await _eventRepository.getEventTypes(search: search, size: 9);
+      final types = await _eventRepository.getEventTypes(
+        search: search,
+        size: 9,
+      );
       eventTypes.assignAll(types);
-      if (search.isEmpty && types.isNotEmpty && selectedEventTypeId.value == null) {
+      if (search.isEmpty &&
+          types.isNotEmpty &&
+          selectedEventTypeId.value == null) {
         // optionally auto select first if needed, but maybe not required for grid
       }
     } catch (e) {
@@ -70,48 +74,27 @@ class CreateEventController extends GetxController {
     }
   }
 
-  Future<void> continueToNextStep() async {
-    if (eventNameController.text.isEmpty || selectedEventTypeId.value == null || eventDateController.text.isEmpty) {
+  // Mirrors the web app's handleCreateWorkspace: this screen only collects a
+  // draft (name/type/date/priority) and never calls the API. The backend
+  // requires venue + full schedule to create an event, which aren't captured
+  // here - the wizard's Step 1 (which has those fields) makes the first save.
+  void continueToNextStep() {
+    if (eventNameController.text.isEmpty ||
+        selectedEventTypeId.value == null ||
+        eventDateController.text.isEmpty) {
       Get.snackbar('Error', 'Please fill all details');
       return;
     }
 
-    try {
-      isCreating.value = true;
-      
-      final request = EventRequestDto(
-        id: 0,
-        projectName: eventNameController.text,
-        eventTypeId: selectedEventTypeId.value!,
-        inquiryDate: DateFormat('dd/MM/yyyy').format(DateTime.now()), // Set inquiry date
-        eventStartDate: eventDateController.text,
-        eventStartTime: "",
-        eventEndDate: "",
-        eventEndTime: "",
-        eventStatus: "INQUIRY",
-        priority: selectedPriority.value,
-      );
-
-      final response = await _eventRepository.saveEvent(request);
-      final data = response['data'];
-      if (data != null && data['id'] != null) {
-        final eventId = data['id'] as int;
-        
-        Get.toNamed(AppRoutes.eventWizard, arguments: {
-          'eventId': eventId,
-          'eventName': eventNameController.text,
-          'eventTypeId': selectedEventTypeId.value,
-          'eventDate': eventDateController.text,
-          'priority': selectedPriority.value,
-        });
-      } else {
-        Get.snackbar('Error', 'Failed to retrieve event ID');
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to create workspace: $e');
-    } finally {
-      isCreating.value = false;
-    }
+    Get.toNamed(
+      AppRoutes.eventWizard,
+      arguments: {
+        'eventName': eventNameController.text,
+        'eventTypeId': selectedEventTypeId.value,
+        'eventDate': eventDateController.text,
+        'priority': selectedPriority.value,
+      },
+    );
   }
 
   @override

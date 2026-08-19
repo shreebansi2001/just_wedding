@@ -6,6 +6,7 @@ import '../../../../../core/constants/app_dimens.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/app_text_field.dart';
+import '../../../../../domain/models/event_dtos.dart';
 import '../../controllers/event_wizard_controller.dart';
 import 'wizard_progress_bar.dart';
 
@@ -23,49 +24,61 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
           title: AppStrings.functionDetails,
         ),
         const SizedBox(height: AppDimens.paddingLg),
-        const AppTextField(
+        AppTextField(
           hintText: AppStrings.searchFunctions,
-          prefixIcon: Icon(Icons.search, color: AppColors.hint, size: 20),
+          prefixIcon: const Icon(Icons.search, color: AppColors.hint, size: 20),
+          onChanged: (value) => controller.functionSearchQuery.value = value,
         ),
         const SizedBox(height: AppDimens.paddingMd),
         AppButton(
           text: '+ Add Function',
-          onPressed: () {},
+          onPressed: controller.addFunctionRow,
           borderRadius: AppDimens.radiusMd,
           height: 48,
           hasShadow: true,
         ),
         const SizedBox(height: AppDimens.paddingLg),
-        // Dynamic Function List
-        Obx(() => Column(
-          children: controller.functions.map((function) {
+        Obx(() {
+          final query = controller.functionSearchQuery.value
+              .trim()
+              .toLowerCase();
+          final filtered = query.isEmpty
+              ? controller.functions
+              : controller.functions
+                    .where((f) => f.name.toLowerCase().contains(query))
+                    .toList();
+
+          if (filtered.isEmpty) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: AppDimens.paddingMd),
-              child: _buildFunctionCard(
-                name: function.name,
-                icon: function.icon,
-                iconBgColor: function.iconBgColor,
-                iconColor: function.iconColor,
-                borderColor: function.borderColor,
-                date: function.date,
-                time: function.time,
-                venue: function.venue,
-                subVenue: function.subVenue,
-                isFilledData: function.isFilledData,
-                venueId: function.venueId,
-                onVenueSelected: (id) {
-                  final v = controller.venues.firstWhereOrNull((element) => element.id == id);
-                  if (v != null) {
-                    function.venueId = id;
-                    function.venue = v.nameEnglish ?? '';
-                    controller.functions.refresh();
-                  }
-                },
+              padding: const EdgeInsets.symmetric(
+                vertical: AppDimens.paddingXl,
+              ),
+              child: Center(
+                child: Text(
+                  controller.functions.isEmpty
+                      ? 'No functions added yet. Tap "+ Add Function" to add one.'
+                      : 'No functions match your search.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.publicSans(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             );
-          }).toList(),
-        )),
+          }
 
+          return Column(
+            children: filtered
+                .map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppDimens.paddingMd),
+                    child: _buildFunctionCard(context, entry),
+                  ),
+                )
+                .toList(),
+          );
+        }),
         const SizedBox(height: AppDimens.paddingXxl),
         Row(
           children: [
@@ -100,211 +113,324 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
     );
   }
 
-  Widget _buildFunctionCard({
-    required String name,
-    required IconData icon,
-    required Color iconBgColor,
-    required Color iconColor,
-    required Color borderColor,
-    required String? date,
-    required String? time,
-    required String venue,
-    required String subVenue,
-    required bool isFilledData,
-    int? venueId,
-    ValueChanged<int>? onVenueSelected,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IntrinsicHeight(
-        child: Row(
+  Widget _buildFunctionCard(BuildContext context, FunctionEntry entry) {
+    return Obx(() {
+      // Reads controller.functions so this card rebuilds whenever any row is
+      // mutated in place (functions.refresh()), since FunctionEntry itself isn't reactive.
+      // ignore: unused_local_variable
+      final _ = controller.functions.length;
+
+      final venue = controller.venues.firstWhereOrNull(
+        (v) => v.id == entry.venueId,
+      );
+      final subVenueNames = entry.subVenueIds
+          .map(
+            (id) => venue?.subVenues
+                .firstWhereOrNull((sv) => sv.id == id)
+                ?.nameEnglish,
+          )
+          .whereType<String>()
+          .join(', ');
+
+      return Container(
+        padding: const EdgeInsets.all(AppDimens.paddingMd),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Left colored border accent
-            Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: borderColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimens.paddingMd),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Header row
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: iconBgColor,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(icon, color: iconColor, size: 20),
-                        ),
-                        const SizedBox(width: AppDimens.paddingSm),
-                        Expanded(
-                          child: Text(
-                            name,
-                            style: GoogleFonts.publicSans(
-                              color: AppColors.textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.chat_bubble_outline, size: 18, color: AppColors.hint),
-                          onPressed: () {},
-                          constraints: const BoxConstraints(),
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
-                          onPressed: () {},
-                          constraints: const BoxConstraints(),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppDimens.paddingMd),
-
-                    // Date & Time row
-                    if (isFilledData) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildIconLabel(Icons.calendar_today_outlined, AppStrings.date),
-                                const SizedBox(height: 4),
-                                Text(
-                                  date ?? '',
-                                  style: GoogleFonts.publicSans(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildIconLabel(Icons.access_time, AppStrings.time),
-                                const SizedBox(height: 4),
-                                Text(
-                                  time ?? '',
-                                  style: GoogleFonts.publicSans(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+            // Header: function type + notes/delete actions
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildIconLabel(
+                        Icons.celebration_outlined,
+                        'Function Type *',
                       ),
-                    ] else ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildFieldLabel(AppStrings.date),
-                                const AppTextField(
-                                  hintText: 'mm/dd/yyyy',
-                                  prefixIcon: Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: AppDimens.paddingMd),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildFieldLabel(AppStrings.time),
-                                const AppTextField(
-                                  hintText: '--:-- --',
-                                  prefixIcon: Icon(Icons.access_time, size: 18, color: AppColors.hint),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 4),
+                      PopupMenuButton<int>(
+                        onSelected: (id) =>
+                            controller.selectFunctionType(entry, id),
+                        itemBuilder: (context) => controller.functionTypes
+                            .map(
+                              (t) => PopupMenuItem(
+                                value: t.id,
+                                child: Text(t.nameEnglish ?? ''),
+                              ),
+                            )
+                            .toList(),
+                        child: _buildDisplayField(
+                          text: entry.name,
+                          hint: 'Select function type...',
+                        ),
                       ),
                     ],
-                    const SizedBox(height: AppDimens.paddingMd),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.chat_bubble_outline,
+                    size: 18,
+                    color: entry.notesEnglish.isEmpty
+                        ? AppColors.hint
+                        : AppColors.primary,
+                  ),
+                  tooltip: entry.notesEnglish.isEmpty
+                      ? 'Add notes'
+                      : 'Edit notes',
+                  onPressed: () => _showNotesDialog(context, entry),
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 18,
+                    color: AppColors.error,
+                  ),
+                  tooltip: 'Remove function',
+                  onPressed: () => controller.removeFunctionRow(entry),
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDimens.paddingMd),
 
-                    // Venue
-                    _buildIconLabel(Icons.location_on_outlined, AppStrings.venue),
-                    const SizedBox(height: 4),
-                    PopupMenuButton<int>(
-                      initialValue: venueId,
-                      onSelected: onVenueSelected,
-                      itemBuilder: (context) => controller.venues.map((v) => 
-                        PopupMenuItem(value: v.id, child: Text(v.nameEnglish ?? ''))
-                      ).toList(),
-                      child: IgnorePointer(
-                        child: AppTextField(
-                          hintText: venue.isEmpty ? 'Select Venue' : venue,
-                          readOnly: true,
-                          suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+            // Date & Time
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildIconLabel(
+                        Icons.calendar_today_outlined,
+                        '${AppStrings.date} *',
+                      ),
+                      const SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: () =>
+                            controller.pickFunctionDate(context, entry),
+                        child: _buildDisplayField(
+                          text: entry.date,
+                          hint: 'mm/dd/yyyy',
                         ),
                       ),
-                    ),
-                    const SizedBox(height: AppDimens.paddingMd),
-
-                    // Sub Venue
-                    _buildIconLabel(Icons.door_front_door_outlined, AppStrings.subVenue),
-                    const SizedBox(height: 4),
-                    AppTextField(
-                      hintText: subVenue,
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: AppDimens.paddingMd),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildIconLabel(
+                        Icons.access_time,
+                        '${AppStrings.time} *',
+                      ),
+                      const SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: () =>
+                            controller.pickFunctionTime(context, entry),
+                        child: _buildDisplayField(
+                          text: entry.time,
+                          hint: '--:-- --',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDimens.paddingMd),
+
+            // Venue
+            _buildIconLabel(
+              Icons.location_on_outlined,
+              '${AppStrings.venue} *',
+            ),
+            const SizedBox(height: 4),
+            PopupMenuButton<int>(
+              onSelected: (id) => controller.selectFunctionVenue(entry, id),
+              itemBuilder: (context) => controller.venues
+                  .map(
+                    (v) => PopupMenuItem(
+                      value: v.id,
+                      child: Text(v.nameEnglish ?? ''),
+                    ),
+                  )
+                  .toList(),
+              child: _buildDisplayField(
+                text: entry.venue,
+                hint: 'Search or select a venue...',
+              ),
+            ),
+            const SizedBox(height: AppDimens.paddingMd),
+
+            // Sub Venue - multi-select, disabled until a venue is chosen
+            _buildIconLabel(
+              Icons.door_front_door_outlined,
+              AppStrings.subVenue,
+            ),
+            const SizedBox(height: 4),
+            GestureDetector(
+              onTap: (venue == null || venue.subVenues.isEmpty)
+                  ? null
+                  : () => _showSubVenuePicker(context, entry, venue),
+              child: _buildDisplayField(
+                text: subVenueNames.isEmpty ? null : subVenueNames,
+                hint: venue == null
+                    ? 'Select a venue first'
+                    : 'Select sub venue(s)...',
+                disabled: venue == null || venue.subVenues.isEmpty,
               ),
             ),
           ],
         ),
+      );
+    });
+  }
+
+  void _showNotesDialog(BuildContext context, FunctionEntry entry) {
+    final notesController = TextEditingController(text: entry.notesEnglish);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Notes'),
+        content: AppTextField(
+          controller: notesController,
+          hintText: 'Add a note for this function...',
+          maxLines: 4,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.updateFunctionNotes(
+                entry,
+                notesController.text.trim(),
+              );
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildFieldLabel(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppDimens.paddingXs),
-      child: Text(
-        text,
-        style: GoogleFonts.publicSans(
-          color: AppColors.textPrimary,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
+  void _showSubVenuePicker(
+    BuildContext context,
+    FunctionEntry entry,
+    VenueResponseDto venue,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimens.paddingMd),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Select Sub Venue(s)',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimens.paddingSm),
+                    ...venue.subVenues.map(
+                      (sv) => CheckboxListTile(
+                        value: entry.subVenueIds.contains(sv.id),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(sv.nameEnglish ?? ''),
+                        onChanged: (_) {
+                          controller.toggleSubVenue(entry, sv.id);
+                          setModalState(() {});
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: AppDimens.paddingMd),
+                    AppButton(
+                      text: 'Done',
+                      onPressed: () => Navigator.pop(context),
+                      height: 44,
+                      borderRadius: AppDimens.radiusMd,
+                      hasShadow: true,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildDisplayField({
+    required String? text,
+    required String hint,
+    bool disabled = false,
+  }) {
+    final isEmpty = text == null || text.isEmpty;
+    return Container(
+      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: disabled
+            ? AppColors.border.withValues(alpha: 0.3)
+            : AppColors.white,
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              isEmpty ? hint : text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.publicSans(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: isEmpty ? AppColors.hint : AppColors.textPrimary,
+              ),
+            ),
+          ),
+          const Icon(
+            Icons.keyboard_arrow_down,
+            color: AppColors.hint,
+            size: 20,
+          ),
+        ],
       ),
     );
   }
@@ -326,4 +452,3 @@ class Step3FunctionDetailsView extends GetView<EventWizardController> {
     );
   }
 }
-

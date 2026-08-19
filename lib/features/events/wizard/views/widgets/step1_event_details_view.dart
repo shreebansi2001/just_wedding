@@ -14,19 +14,19 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const WizardProgressBar(
-          currentStep: 1,
-          totalSteps: 4,
-          title: AppStrings.eventDetails,
-        ),
-        const SizedBox(height: AppDimens.paddingLg),
-        _buildSectionCard(
-          title: AppStrings.basicInformation,
-          child: Form(
-            key: controller.formKeyStep1,
+    return Form(
+      key: controller.formKeyStep1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const WizardProgressBar(
+            currentStep: 1,
+            totalSteps: 4,
+            title: AppStrings.eventDetails,
+          ),
+          const SizedBox(height: AppDimens.paddingLg),
+          _buildSectionCard(
+            title: AppStrings.basicInformation,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -42,8 +42,15 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                             hintText: 'dd/mm/yyyy',
                             controller: controller.inquiryDateController,
                             readOnly: true,
-                            onTap: () => controller.selectDate(context, controller.inquiryDateController),
-                            suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
+                            onTap: () => controller.selectDate(
+                              context,
+                              controller.inquiryDateController,
+                            ),
+                            suffixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 18,
+                              color: AppColors.hint,
+                            ),
                           ),
                         ],
                       ),
@@ -59,27 +66,48 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                               _buildLabel('Event Type *'),
                               InkWell(
                                 onTap: () {},
-                                child: Text('+ Add New', style: GoogleFonts.publicSans(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600)),
+                                child: Text(
+                                  '+ Add New',
+                                  style: GoogleFonts.publicSans(
+                                    fontSize: 12,
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                           PopupMenuButton<int>(
                             onSelected: (id) {
-                              final type = controller.eventTypes.firstWhereOrNull((e) => e.id == id);
+                              final type = controller.eventTypes
+                                  .firstWhereOrNull((e) => e.id == id);
                               if (type != null) {
                                 controller.eventTypeId.value = type.id;
-                                controller.eventTypeController.text = type.nameEnglish ?? '';
+                                controller.eventTypeController.text =
+                                    type.nameEnglish ?? '';
                               }
                             },
-                            itemBuilder: (context) => controller.eventTypes.map((t) => 
-                              PopupMenuItem(value: t.id, child: Text(t.nameEnglish ?? ''))
-                            ).toList(),
+                            itemBuilder: (context) => controller.eventTypes
+                                .map(
+                                  (t) => PopupMenuItem(
+                                    value: t.id,
+                                    child: Text(t.nameEnglish ?? ''),
+                                  ),
+                                )
+                                .toList(),
                             child: IgnorePointer(
                               child: AppTextField(
                                 controller: controller.eventTypeController,
                                 hintText: 'Select Event Type',
                                 readOnly: true,
-                                suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                                suffixIcon: const Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: AppColors.hint,
+                                ),
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? 'Required'
+                                    : null,
                               ),
                             ),
                           ),
@@ -94,187 +122,249 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
                   onSelected: (status) {
                     controller.statusController.text = status;
                   },
-                  itemBuilder: (context) => controller.statusOptions.map((s) => 
-                    PopupMenuItem(value: s, child: Text(s))
-                  ).toList(),
+                  itemBuilder: (context) => controller.statusOptions
+                      .map((s) => PopupMenuItem(value: s, child: Text(s)))
+                      .toList(),
                   child: IgnorePointer(
                     child: AppTextField(
                       controller: controller.statusController,
                       hintText: 'Select Status',
                       readOnly: true,
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
+                      suffixIcon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: AppColors.hint,
+                      ),
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Required' : null,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-        const SizedBox(height: AppDimens.paddingLg),
-        _buildSectionCard(
-          title: AppStrings.eventSchedule,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel(AppStrings.startDate),
-                        AppTextField(
-                          hintText: 'mm/dd/yyyy',
-                          controller: controller.startDateController,
-                          readOnly: true,
-                          onTap: () => controller.selectDate(context, controller.startDateController),
-                          prefixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
-                          validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-                        ),
-                      ],
+          const SizedBox(height: AppDimens.paddingLg),
+          _buildSectionCard(
+            title: AppStrings.eventSchedule,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildLabel(AppStrings.startDate),
+                          AppTextField(
+                            hintText: 'mm/dd/yyyy',
+                            controller: controller.startDateController,
+                            readOnly: true,
+                            onTap: () => controller.selectDate(
+                              context,
+                              controller.startDateController,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 18,
+                              color: AppColors.hint,
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: AppDimens.paddingMd),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel(AppStrings.startTime),
-                        AppTextField(
-                          hintText: '--:-- --',
-                          controller: controller.startTimeController,
-                          readOnly: true,
-                          onTap: () => controller.selectTime(context, controller.startTimeController),
-                          prefixIcon: const Icon(Icons.access_time, size: 18, color: AppColors.hint),
-                          validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-                        ),
-                      ],
+                    const SizedBox(width: AppDimens.paddingMd),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildLabel(AppStrings.startTime),
+                          AppTextField(
+                            hintText: '--:-- --',
+                            controller: controller.startTimeController,
+                            readOnly: true,
+                            onTap: () => controller.selectTime(
+                              context,
+                              controller.startTimeController,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.access_time,
+                              size: 18,
+                              color: AppColors.hint,
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppDimens.paddingMd),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel(AppStrings.endDate),
-                        AppTextField(
-                          hintText: 'mm/dd/yyyy',
-                          controller: controller.endDateController,
-                          readOnly: true,
-                          onTap: () => controller.selectDate(context, controller.endDateController),
-                          prefixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.hint),
-                        ),
-                      ],
+                  ],
+                ),
+                const SizedBox(height: AppDimens.paddingMd),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildLabel(AppStrings.endDate),
+                          AppTextField(
+                            hintText: 'mm/dd/yyyy',
+                            controller: controller.endDateController,
+                            readOnly: true,
+                            onTap: () => controller.selectDate(
+                              context,
+                              controller.endDateController,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 18,
+                              color: AppColors.hint,
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: AppDimens.paddingMd),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel(AppStrings.endTime),
-                        AppTextField(
-                          hintText: '--:-- --',
-                          controller: controller.endTimeController,
-                          readOnly: true,
-                          onTap: () => controller.selectTime(context, controller.endTimeController),
-                          prefixIcon: const Icon(Icons.access_time, size: 18, color: AppColors.hint),
-                        ),
-                      ],
+                    const SizedBox(width: AppDimens.paddingMd),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildLabel(AppStrings.endTime),
+                          AppTextField(
+                            hintText: '--:-- --',
+                            controller: controller.endTimeController,
+                            readOnly: true,
+                            onTap: () => controller.selectTime(
+                              context,
+                              controller.endTimeController,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.access_time,
+                              size: 18,
+                              color: AppColors.hint,
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: AppDimens.paddingLg),
-        _buildSectionCard(
-          title: AppStrings.budgetInformation,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          const SizedBox(height: AppDimens.paddingLg),
+          _buildSectionCard(
+            title: AppStrings.budgetInformation,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildLabel(AppStrings.estimatedBudget),
+                AppTextField(
+                  hintText: '0.00',
+                  controller: controller.estimatedBudgetController,
+                  keyboardType: TextInputType.number,
+                  prefixIcon: Container(
+                    width: 32,
+                    alignment: Alignment.center,
+                    child: Text(
+                      '₹',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 16,
+                        color: AppColors.hint,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppDimens.paddingLg),
+          _buildSectionCard(
+            title: 'VENUE INFORMATION',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildLabel('Venue *'),
+                PopupMenuButton<int>(
+                  onSelected: (id) {
+                    final v = controller.venues.firstWhereOrNull(
+                      (e) => e.id == id,
+                    );
+                    if (v != null) {
+                      controller.selectedVenueId.value = v.id;
+                      controller.preferredVenueController.text =
+                          v.nameEnglish ?? '';
+                    }
+                  },
+                  itemBuilder: (context) => controller.venues
+                      .map(
+                        (v) => PopupMenuItem(
+                          value: v.id,
+                          child: Text(v.nameEnglish ?? ''),
+                        ),
+                      )
+                      .toList(),
+                  child: IgnorePointer(
+                    child: AppTextField(
+                      controller: controller.preferredVenueController,
+                      hintText: 'Search or select a venue...',
+                      readOnly: true,
+                      suffixIcon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: AppColors.hint,
+                      ),
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Required' : null,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppDimens.paddingXxl),
+          Row(
             children: [
-              _buildLabel(AppStrings.estimatedBudget),
-              AppTextField(
-                hintText: '0.00',
-                controller: controller.estimatedBudgetController,
-                keyboardType: TextInputType.number,
-                prefixIcon: Container(
-                  width: 32,
-                  alignment: Alignment.center,
-                  child: Text('₹', style: GoogleFonts.publicSans(fontSize: 16, color: AppColors.hint)),
+              Expanded(
+                flex: 1,
+                child: AppButton(
+                  text: AppStrings.cancel,
+                  isOutlined: true,
+                  hasShadow: false,
+                  textColor: AppColors.primary,
+                  backgroundColor: AppColors.border,
+                  onPressed: controller.cancel,
+                  borderRadius: AppDimens.radiusMd,
+                  height: 48,
+                ),
+              ),
+              const SizedBox(width: AppDimens.paddingMd),
+              Expanded(
+                flex: 2,
+                child: AppButton(
+                  text: AppStrings.continueToClient,
+                  onPressed: controller.nextStep,
+                  borderRadius: AppDimens.radiusMd,
+                  height: 48,
+                  hasShadow: true,
                 ),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: AppDimens.paddingLg),
-        _buildSectionCard(
-          title: 'VENUE INFORMATION',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildLabel('Venue *'),
-              PopupMenuButton<int>(
-                onSelected: (id) {
-                  final v = controller.venues.firstWhereOrNull((e) => e.id == id);
-                  if (v != null) {
-                    controller.selectedVenueId.value = v.id;
-                    controller.preferredVenueController.text = v.nameEnglish ?? '';
-                  }
-                },
-                itemBuilder: (context) => controller.venues.map((v) => 
-                  PopupMenuItem(value: v.id, child: Text(v.nameEnglish ?? ''))
-                ).toList(),
-                child: IgnorePointer(
-                  child: AppTextField(
-                    controller: controller.preferredVenueController,
-                    hintText: 'Search or select a venue...',
-                    readOnly: true,
-                    suffixIcon: const Icon(Icons.keyboard_arrow_down, color: AppColors.hint),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppDimens.paddingXxl),
-        Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: AppButton(
-                text: AppStrings.cancel,
-                isOutlined: true,
-                hasShadow: false,
-                textColor: AppColors.primary,
-                backgroundColor: AppColors.border,
-                onPressed: controller.cancel,
-                borderRadius: AppDimens.radiusMd,
-                height: 48,
-              ),
-            ),
-            const SizedBox(width: AppDimens.paddingMd),
-            Expanded(
-              flex: 2,
-              child: AppButton(
-                text: AppStrings.continueToClient,
-                onPressed: controller.nextStep,
-                borderRadius: AppDimens.radiusMd,
-                height: 48,
-                hasShadow: true,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppDimens.paddingXxl),
-      ],
+          const SizedBox(height: AppDimens.paddingXxl),
+        ],
+      ),
     );
   }
 
@@ -325,4 +415,3 @@ class Step1EventDetailsView extends GetView<EventWizardController> {
     );
   }
 }
-

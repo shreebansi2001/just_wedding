@@ -10,6 +10,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/repositories/location_repository_impl.dart';
 import '../../domain/repositories/location_repository.dart';
+import '../services/auth_service.dart';
 
 class InitialBinding extends Bindings {
   @override
@@ -18,7 +19,7 @@ class InitialBinding extends Bindings {
     Get.put<DioClient>(dioClient, permanent: true);
     Get.put<AuthRepository>(AuthRepositoryImpl(dioClient), permanent: true);
     Get.put<LocationRepository>(LocationRepositoryImpl(dioClient), permanent: true);
-    Get.put<EventRepository>(EventRepositoryImpl(dioClient), permanent: true);
+    Get.put<EventRepository>(EventRepositoryImpl(dioClient, Get.find<AuthService>()), permanent: true);
     Get.put<FollowUpRepository>(MockFollowUpRepository(), permanent: true);
     Get.put<QuotationRepository>(QuotationRepositoryImpl(dioClient), permanent: true);
   }

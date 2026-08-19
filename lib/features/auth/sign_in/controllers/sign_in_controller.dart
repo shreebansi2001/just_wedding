@@ -119,10 +119,17 @@ class SignInController extends GetxController {
 
   void _handleTokenResponse(dynamic response) {
     if (response is Map<String, dynamic>) {
+      final data = response['data'];
       // Look for the token in typical places
-      final token = response['token'] ?? response['accessToken'] ?? response['data']?['token'];
+      final token = response['token'] ?? response['accessToken'] ?? data?['token'];
       if (token != null && token.toString().isNotEmpty) {
         _authService.setToken(token.toString());
+      }
+
+      final userId = data is Map ? (data['id'] ?? data['userId']) : (response['id'] ?? response['userId']);
+      final parsedUserId = userId is int ? userId : int.tryParse(userId?.toString() ?? '');
+      if (parsedUserId != null) {
+        _authService.setUserId(parsedUserId);
       }
     }
   }
