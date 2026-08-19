@@ -231,7 +231,19 @@ class CreateEventView extends GetView<CreateEventController> {
       itemBuilder: (context, index) {
         final item = controller.eventTypes[index];
         final name = item.nameEnglish ?? 'Unknown';
-        final icon = '🗓️'; // Placeholder since imgPath requires network image
+        final imgPath = item.imgPath;
+        final Widget iconWidget = (imgPath != null && imgPath.isNotEmpty)
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(
+                  imgPath,
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Text('🗓️', style: TextStyle(fontSize: 24)),
+                ),
+              )
+            : const Text('🗓️', style: TextStyle(fontSize: 24));
 
         return Obx(() {
           final isSelected = controller.selectedEventTypeId.value == item.id;
@@ -257,10 +269,7 @@ class CreateEventView extends GetView<CreateEventController> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    icon,
-                    style: const TextStyle(fontSize: 22),
-                  ),
+                  iconWidget,
                   const SizedBox(height: 6),
                   Text(
                     name,

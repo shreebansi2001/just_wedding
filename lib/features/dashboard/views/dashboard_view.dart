@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 import '../../../core/constants/app_strings.dart';
@@ -164,26 +165,26 @@ class DashboardView extends GetView<DashboardController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'August 2026',
+              Obx(() => Text(
+                DateFormat('MMMM yyyy').format(controller.currentMonth.value),
                 style: GoogleFonts.publicSans(
                   color: AppColors.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
-              ),
+              )),
               Row(
                 children: [
                   IconButton(
                     icon: const Icon(Icons.chevron_left, color: AppColors.primary, size: 22),
-                    onPressed: () {},
+                    onPressed: controller.previousMonth,
                     constraints: const BoxConstraints(),
                     padding: const EdgeInsets.all(4),
                   ),
                   const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.chevron_right, color: AppColors.primary, size: 22),
-                    onPressed: () {},
+                    onPressed: controller.nextMonth,
                     constraints: const BoxConstraints(),
                     padding: const EdgeInsets.all(4),
                   ),
@@ -216,66 +217,104 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Widget _buildCalendarGrid() {
-    final List<List<int>> weeks = [
-      [28, 29, 30, 31, 1, 2, 3],
-      [4, 5, 6, 7, 8, 9, 10],
-      [11, 12, 13, 14, 15, 16, 17],
-      [18, 19, 20, 21, 22, 23, 24],
-    ];
+    return Obx(() {
+      final currentMonth = controller.currentMonth.value;
+      final selectedDate = controller.selectedDate.value;
 
-    final eventDays = [20, 22, 23];
+      final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+      final lastDayOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0);
+      final firstWeekday = firstDayOfMonth.weekday;
 
-    return Column(
-      children: List.generate(weeks.length, (weekIndex) {
-        final week = weeks[weekIndex];
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: week.map((day) {
-              final isCurrentMonth = !(weekIndex == 0 && day > 7);
-              final isSelected = (day == 18 && isCurrentMonth);
-              final hasEvent = (eventDays.contains(day) && isCurrentMonth);
+      final List<DateTime> days = [];
+      final previousMonth = DateTime(currentMonth.year, currentMonth.month - 1);
+      final lastDayOfPrevMonth = DateTime(currentMonth.year, currentMonth.month, 0).day;
 
-              return Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '$day',
-                        style: GoogleFonts.publicSans(
-                          color: isSelected
-                              ? AppColors.white
-                              : (isCurrentMonth ? AppColors.textPrimary : AppColors.hint),
-                          fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.w700 : (isCurrentMonth ? FontWeight.w500 : FontWeight.w400),
+      for (int i = firstWeekday - 1; i > 0; i--) {
+        days.add(DateTime(previousMonth.year, previousMonth.month, lastDayOfPrevMonth - i + 1));
+      }
+      for (int i = 1; i <= lastDayOfMonth.day; i++) {
+        days.add(DateTime(currentMonth.year, currentMonth.month, i));
+      }
+      final remainingCells = 42 - days.length;
+      final nextMonth = DateTime(currentMonth.year, currentMonth.month + 1);
+      for (int i = 1; i <= remainingCells; i++) {
+        days.add(DateTime(nextMonth.year, nextMonth.month, i));
+      }
+
+      final List<List<DateTime>> weeks = [];
+      for (int i = 0; i < days.length; i += 7) {
+        if (i >= 35 && days[i].month != currentMonth.month) break; // Don't show 6th row if entirely next month
+        weeks.add(days.sublist(i, i + 7));
+      }
+
+      return Column(
+        children: List.generate(weeks.length, (weekIndex) {
+          final week = weeks[weekIndex];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: week.map((date) {
+                final isCurrentMonth = date.month == currentMonth.month;
+                final isSelected = selectedDate != null &&
+                    date.year == selectedDate.year &&
+                    date.month == selectedDate.month &&
+                    date.day == selectedDate.day;
+
+                // Simple check: if events exist on this day
+                final hasEvent = controller.events.any((e) {
+                  try {
+                    final f1 = DateFormat('MM/dd/yyyy').format(date);
+                    final f2 = DateFormat('dd/MM/yyyy').format(date);
+                    return e.date != null && (e.date!.contains(f1) || e.date!.contains(f2));
+                  } catch (_) {
+                    return false;
+                  }
+                });
+
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: isCurrentMonth ? () => controller.selectDate(date) : null,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.primary : Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${date.day}',
+                            style: GoogleFonts.publicSans(
+                              color: isSelected
+                                  ? AppColors.white
+                                  : (isCurrentMonth ? AppColors.textPrimary : AppColors.textSecondary.withValues(alpha: 0.5)),
+                              fontSize: 13,
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: hasEvent ? AppColors.primary : Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: hasEvent ? AppColors.primary : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        );
-      }),
-    );
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        }),
+      );
+    });
   }
 
   Widget _buildUpcomingEventsHeader() {
