@@ -40,9 +40,10 @@ class SignInView extends GetView<SignInController> {
                       _buildActions(),
                       const SizedBox(height: AppDimens.paddingXl),
                       Obx(() => AppButton(
-                        text: controller.loginMethod.value == LoginMethod.otp && controller.isOtpSent.value
-                            ? 'Verify OTP'
-                            : (controller.loginMethod.value == LoginMethod.otp ? 'Request OTP' : AppStrings.signIn),
+                        text: AppStrings.signIn,
+                        // text: controller.loginMethod.value == LoginMethod.otp && controller.isOtpSent.value
+                        //     ? 'Verify OTP'
+                        //     : (controller.loginMethod.value == LoginMethod.otp ? 'Request OTP' : AppStrings.signIn),
                         onPressed: controller.submit,
                         isLoading: controller.isLoading.value,
                         borderRadius: AppDimens.radiusFull,
@@ -137,10 +138,10 @@ class SignInView extends GetView<SignInController> {
   Widget _buildForm() {
     return Column(
       children: [
-        _buildLoginToggle(),
-        const SizedBox(height: AppDimens.paddingXl),
+        // _buildLoginToggle(),
+        // const SizedBox(height: AppDimens.paddingXl),
         Obx(() {
-          if (controller.loginMethod.value == LoginMethod.email) {
+          // if (controller.loginMethod.value == LoginMethod.email) {
             return Column(
               children: [
                 AppTextField(
@@ -167,28 +168,28 @@ class SignInView extends GetView<SignInController> {
                 ),
               ],
             );
-          } else {
-            return Column(
-              children: [
-                AppTextField(
-                  controller: controller.contactNoController,
-                  hintText: 'Mobile Number',
-                  keyboardType: TextInputType.phone,
-                  prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.hint),
-                  readOnly: controller.isOtpSent.value,
-                ),
-                if (controller.isOtpSent.value) ...[
-                  const SizedBox(height: AppDimens.paddingMd),
-                  AppTextField(
-                    controller: controller.otpController,
-                    hintText: 'Enter OTP',
-                    keyboardType: TextInputType.number,
-                    prefixIcon: const Icon(Icons.pin_outlined, color: AppColors.hint),
-                  ),
-                ],
-              ],
-            );
-          }
+          // } else {
+          //   return Column(
+          //     children: [
+          //       AppTextField(
+          //         controller: controller.contactNoController,
+          //         hintText: 'Mobile Number',
+          //         keyboardType: TextInputType.phone,
+          //         prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.hint),
+          //         readOnly: controller.isOtpSent.value,
+          //       ),
+          //       if (controller.isOtpSent.value) ...[
+          //         const SizedBox(height: AppDimens.paddingMd),
+          //         AppTextField(
+          //           controller: controller.otpController,
+          //           hintText: 'Enter OTP',
+          //           keyboardType: TextInputType.number,
+          //           prefixIcon: const Icon(Icons.pin_outlined, color: AppColors.hint),
+          //         ),
+          //       ],
+          //     ],
+          //   );
+          // }
         }),
       ],
     );

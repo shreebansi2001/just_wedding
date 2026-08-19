@@ -6,6 +6,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../controllers/register_controller.dart';
 
 class RegisterView extends GetView<RegisterController> {
@@ -86,35 +87,43 @@ class RegisterView extends GetView<RegisterController> {
                         children: [
                           Expanded(
                             child: Obx(() {
-                              final selectedState = controller.states.firstWhereOrNull((s) => s.id == controller.selectedStateId.value);
-                              return AppTextField(
-                                hintText: selectedState?.name ?? 'State',
-                                readOnly: true,
-                                prefixIcon: const Icon(Icons.map_outlined, color: AppColors.hint),
-                                suffixIcon: controller.isLocationLoading.value 
-                                  ? const Padding(padding: EdgeInsets.all(12), child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)))
-                                  : const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.hint),
-                                onTap: () {
-                                  if (controller.states.isEmpty) return;
-                                  Get.bottomSheet(
-                                    Container(
-                                      color: AppColors.white,
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: controller.states.length,
-                                        itemBuilder: (context, index) {
-                                          final state = controller.states[index];
-                                          return ListTile(
-                                            title: Text(state.name),
-                                            onTap: () {
-                                              controller.fetchCities(state.id);
-                                              Get.back();
-                                            },
-                                          );
-                                        },
-                                      ),
-                                    ),
+                              if (controller.isLocationLoading.value && controller.states.isEmpty) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                              return DropdownButtonFormField<int>(
+                                decoration: InputDecoration(
+                                  hintText: 'State',
+                                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.hint),
+                                  prefixIcon: const Icon(Icons.map_outlined, color: AppColors.hint),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  filled: true,
+                                  fillColor: AppColors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                                    borderSide: const BorderSide(color: AppColors.border, width: 1),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                                    borderSide: const BorderSide(color: AppColors.border, width: 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                                  ),
+                                ),
+                                value: controller.selectedStateId.value,
+                                items: controller.states.map((state) {
+                                  return DropdownMenuItem<int>(
+                                    value: state.id,
+                                    child: Text(state.name, style: AppTextStyles.body),
                                   );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    controller.selectedStateId.value = value;
+                                    controller.selectedCityId.value = null; // Reset city when state changes
+                                    controller.fetchCities(value);
+                                  }
                                 },
                               );
                             }),
@@ -122,35 +131,41 @@ class RegisterView extends GetView<RegisterController> {
                           const SizedBox(width: AppDimens.paddingMd),
                           Expanded(
                             child: Obx(() {
-                              final selectedCity = controller.cities.firstWhereOrNull((c) => c.id == controller.selectedCityId.value);
-                              return AppTextField(
-                                hintText: selectedCity?.name ?? 'City',
-                                readOnly: true,
-                                prefixIcon: const Icon(Icons.location_on_outlined, color: AppColors.hint),
-                                suffixIcon: controller.isLocationLoading.value 
-                                  ? const Padding(padding: EdgeInsets.all(12), child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)))
-                                  : const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.hint),
-                                onTap: () {
-                                  if (controller.cities.isEmpty) return;
-                                  Get.bottomSheet(
-                                    Container(
-                                      color: AppColors.white,
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: controller.cities.length,
-                                        itemBuilder: (context, index) {
-                                          final city = controller.cities[index];
-                                          return ListTile(
-                                            title: Text(city.name),
-                                            onTap: () {
-                                              controller.selectedCityId.value = city.id;
-                                              Get.back();
-                                            },
-                                          );
-                                        },
-                                      ),
-                                    ),
+                              if (controller.isLocationLoading.value && controller.cities.isEmpty) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                              return DropdownButtonFormField<int>(
+                                decoration: InputDecoration(
+                                  hintText: 'City',
+                                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.hint),
+                                  prefixIcon: const Icon(Icons.location_on_outlined, color: AppColors.hint),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  filled: true,
+                                  fillColor: AppColors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                                    borderSide: const BorderSide(color: AppColors.border, width: 1),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                                    borderSide: const BorderSide(color: AppColors.border, width: 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                                  ),
+                                ),
+                                value: controller.selectedCityId.value,
+                                items: controller.cities.map((city) {
+                                  return DropdownMenuItem<int>(
+                                    value: city.id,
+                                    child: Text(city.name, style: AppTextStyles.body),
                                   );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    controller.selectedCityId.value = value;
+                                  }
                                 },
                               );
                             }),
