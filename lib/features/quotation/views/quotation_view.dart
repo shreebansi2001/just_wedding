@@ -187,10 +187,12 @@ class QuotationView extends GetView<QuotationController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildLabel(AppStrings.estimateDate),
-                    const AppTextField(
-                      hintText: AppStrings.sampleEstimateDate,
-                      suffixIcon: Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSecondary),
-                    ),
+                    Obx(() => AppTextField(
+                      hintText: controller.estimateDate.value,
+                      readOnly: true,
+                      onTap: () => controller.selectEstimateDate(context),
+                      suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSecondary),
+                    )),
                   ],
                 ),
               ),

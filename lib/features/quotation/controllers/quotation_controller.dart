@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import '../../../domain/models/quotation_model.dart';
 import '../../../domain/models/event_estimate_dtos.dart';
 import '../../../domain/repositories/quotation_repository.dart';
@@ -72,6 +73,30 @@ class QuotationController extends GetxController {
   final partyName = ''.obs;
   final venue = ''.obs;
   final estimateDate = '10/25/2024'.obs;
+
+  Future<void> selectEstimateDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFA13253), // AppColors.primary fallback
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      estimateDate.value = "${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}";
+    }
+  }
   final approvalStatus = 'Completed'.obs;
   final functionName = 'Reception'.obs;
 
