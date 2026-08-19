@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_dropdown.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_page_container.dart';
 import '../controllers/quotation_controller.dart';
@@ -799,10 +800,19 @@ class QuotationView extends GetView<QuotationController> {
                 ),
                 const SizedBox(height: AppDimens.paddingMd),
                 _buildLabel(AppStrings.paymentMode),
-                const AppTextField(
-                  hintText: AppStrings.bankTransfer,
-                  suffixIcon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
-                ),
+                Obx(() => AppDropdown<String>(
+                  hintText: AppStrings.paymentMode,
+                  value: controller.paymentMode.value,
+                  items: [
+                    DropdownMenuItem(value: 'BANK_TRANSFER', child: Text(AppStrings.bankTransfer)),
+                    DropdownMenuItem(value: 'UPI', child: Text(AppStrings.upi)),
+                    DropdownMenuItem(value: 'CASH', child: Text(AppStrings.cash)),
+                    DropdownMenuItem(value: 'CHEQUE', child: Text(AppStrings.cheque)),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) controller.paymentMode.value = val;
+                  },
+                )),
                 const SizedBox(height: AppDimens.paddingMd),
                 _buildLabel(AppStrings.paymentDateTime),
                 const AppTextField(

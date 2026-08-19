@@ -322,6 +322,9 @@ class AppStrings {
   static const String advancePayment1 = 'Advance Payment #1';
   static const String paymentMode = 'Payment Mode';
   static const String bankTransfer = 'Bank Transfer';
+  static const String upi = 'UPI';
+  static const String cash = 'Cash';
+  static const String cheque = 'Cheque';
   static const String paymentDateTime = 'Payment Date & Time';
   static const String samplePaymentDateTime = '10/25/2024 10:45 AM';
   static const String paymentDescription = 'Payment Description';
