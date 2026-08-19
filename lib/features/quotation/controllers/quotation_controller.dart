@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../../domain/models/quotation_model.dart';
 import '../../../domain/models/event_estimate_dtos.dart';
 import '../../../domain/repositories/quotation_repository.dart';
+import '../../../core/services/auth_service.dart';
 
 class AdvancePaymentItem {
   final amount = ''.obs;
@@ -46,6 +47,7 @@ class QuotationController extends GetxController {
 
   Future<void> fetchBankAccounts() async {
     try {
+      final userId = Get.find<AuthService>().userId;
       final payload = {
         "isPrimary": true,
         "page": 0,
@@ -53,7 +55,7 @@ class QuotationController extends GetxController {
         "size": 100,
         "sortBy": "",
         "sortDirection": "",
-        "userId": 0
+        "userId": userId
       };
       bankAccounts.value = await _repository.getBankAccounts(payload);
     } catch (e) {
@@ -63,6 +65,7 @@ class QuotationController extends GetxController {
 
   Future<void> fetchCashAccounts() async {
     try {
+      final userId = Get.find<AuthService>().userId;
       final payload = {
         "isPrimary": true,
         "page": 0,
@@ -70,7 +73,7 @@ class QuotationController extends GetxController {
         "size": 100,
         "sortBy": "",
         "sortDirection": "",
-        "userId": 0
+        "userId": userId
       };
       cashAccounts.value = await _repository.getCashAccounts(payload);
     } catch (e) {
@@ -118,7 +121,7 @@ class QuotationController extends GetxController {
         sgst: sgstPercent.value.toDouble(),
         roundOff: double.tryParse(roundOffAmount.value.replaceAll(',', '')) ?? 0.0,
         taxAmount: 0,
-        userId: 1,
+        userId: Get.find<AuthService>().userId,
       );
 
       await _repository.addOrUpdateEstimate(payload);

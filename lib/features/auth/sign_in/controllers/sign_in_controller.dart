@@ -124,6 +124,12 @@ class SignInController extends GetxController {
       if (token != null && token.toString().isNotEmpty) {
         _authService.setToken(token.toString());
       }
+      
+      // Look for the user ID based on the provided JSON structure
+      final userId = response['data']?['id'] ?? response['userId'] ?? response['user']?['id'];
+      if (userId != null) {
+        _authService.setUserId(int.tryParse(userId.toString()) ?? 0);
+      }
     }
   }
 
